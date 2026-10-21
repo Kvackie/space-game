@@ -7,12 +7,14 @@ import './theme.css'
 
 import { Engine } from '@babylonjs/core/Engines/engine'
 import { registerCrafting } from './game/crafting'
+import { registerMining } from './game/mining'
 import { startSession } from './game/session'
 import { applyLayout, computeLayout } from './layout'
 import { createStationScene } from './render/stationScene'
 import { createHub } from './ui/hub'
 import { ScreenHost } from './ui/screens'
 import { craftingScreen } from './ui/screens/crafting'
+import { miningScreen } from './ui/screens/mining'
 
 /** Device pixel ratio cap: sharper than this costs a lot on phones for little gain. */
 const MAX_PIXEL_RATIO = 2
@@ -36,11 +38,13 @@ engine.runRenderLoop(() => scene.render())
 
 const session = await startSession((clock) => {
   registerCrafting(clock)
+  registerMining(clock)
 })
 if (session.loadError) console.error(`Save could not be loaded and was kept aside: ${session.loadError}`)
 
 const screens = new ScreenHost(ui, session.store)
 screens.register(craftingScreen)
+screens.register(miningScreen)
 createHub(ui, session.store, screens)
 
 // dev-only handle for inspecting and editing the game from the console
