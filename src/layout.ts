@@ -21,7 +21,12 @@ export interface Layout {
   height: number
   /** UI scale relative to the 1280×720 design core. */
   uiScale: number
+  /** True when the game area is too short for the full layout (phones); screens use compact arrangements. */
+  compact: boolean
 }
+
+/** Game-area height in CSS px below which compact layouts apply. */
+export const COMPACT_HEIGHT = 560
 
 export const DESIGN: Size = { width: 1280, height: 720 }
 export const MIN_ASPECT = 4 / 3
@@ -50,6 +55,7 @@ export function computeLayout(viewport: Size): Layout {
     width,
     height,
     uiScale: Math.max(scaleFor({ width, height }), MIN_UI_SCALE),
+    compact: height < COMPACT_HEIGHT,
   }
 }
 
@@ -64,5 +70,6 @@ export function applyLayout(gameArea: HTMLElement, layout: Layout): void {
     width: `${layout.width}px`,
     height: `${layout.height}px`,
   })
+  gameArea.classList.toggle('compact', layout.compact)
   document.documentElement.style.fontSize = `${16 * layout.uiScale}px`
 }

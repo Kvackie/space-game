@@ -3,7 +3,14 @@ import { computeLayout, MAX_ASPECT, MIN_ASPECT, MIN_UI_SCALE } from '../src/layo
 
 describe('computeLayout', () => {
   it('fills a 16:9 screen at the design scale', () => {
-    expect(computeLayout({ width: 1280, height: 720 })).toEqual({ x: 0, y: 0, width: 1280, height: 720, uiScale: 1 })
+    expect(computeLayout({ width: 1280, height: 720 })).toEqual({
+      x: 0,
+      y: 0,
+      width: 1280,
+      height: 720,
+      uiScale: 1,
+      compact: false,
+    })
   })
 
   it('fills screens between 4:3 and 21:9 without letterboxing', () => {
@@ -43,5 +50,14 @@ describe('computeLayout', () => {
     expect(computeLayout({ width: 1024, height: 768 }).uiScale).toBe(MIN_UI_SCALE)
     expect(computeLayout({ width: 780, height: 360 }).uiScale).toBe(MIN_UI_SCALE)
     expect(computeLayout({ width: 400, height: 200 }).uiScale).toBe(MIN_UI_SCALE)
+  })
+})
+
+describe('compact layout', () => {
+  it('switches on the game area height, not the window height', () => {
+    expect(computeLayout({ width: 780, height: 360 }).compact).toBe(true)
+    expect(computeLayout({ width: 1280, height: 720 }).compact).toBe(false)
+    // a portrait window is tall, but its letterboxed game area is short
+    expect(computeLayout({ width: 474, height: 870 }).compact).toBe(true)
   })
 })
