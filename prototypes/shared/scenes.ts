@@ -12,7 +12,7 @@ export type Vec3 = [number, number, number]
 export const SCENES: SceneId[] = ['ship', 'station', 'battle']
 
 /** Bloom settings every stack uses: strength, radius (0-1), luminance threshold. */
-export const BLOOM = { strength: 0.6, radius: 0.35, threshold: 0.85 }
+export const BLOOM = { strength: 0.25, radius: 0.2, threshold: 0.92 }
 export const MODELS: ModelId[] = ['hero', 'frigate', 'enemy', 'station']
 
 /** Pages live one folder down (three/, babylon/, ...); models sit in the public root. */
