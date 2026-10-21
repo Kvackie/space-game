@@ -1,0 +1,14 @@
+{
+  "name": "space-game",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Space game project with a Node.js-built GitHub Pages site",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "start": "node scripts/serve.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
