@@ -34,6 +34,14 @@ blender/              Blender sources and scripts
 tests/                unit tests
 ```
 
+## 3D models
+
+Placeholder models are built by a Blender script, run headless from the repository root:
+
+```bash
+blender --background --factory-startup --python blender/scripts/build_placeholder_models.py -- public/assets/models
+```
+
 ## Deploying
 
 GitHub Pages is built by the `Deploy Pages` workflow (`.github/workflows/pages.yml`): install, test, build, upload `dist/`, deploy. It is **manual only**: run it from **Actions > Deploy Pages > Run workflow**. It never runs on push.
