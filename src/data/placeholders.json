@@ -1,82 +1,123 @@
 {
-  "$comment": "Every [PLACEHOLDER] value the human approved, in one place (GDD rule 0.2.5). Replace as decisions land. Times are in seconds.",
+  "$comment": "Every [PLACEHOLDER] value the human approved, in one place (GDD rule 0.2.5). Names carry a [P] tag so they are easy to find and change (D-112). Times are in seconds.",
   "names": {
-    "game": "[GAME TITLE]",
-    "station": "[STATION NAME]",
-    "ore1": "[ORE 1]",
-    "ore2": "[ORE 2]",
-    "material1": "[MATERIAL 1]",
-    "material2": "[MATERIAL 2]",
-    "component": "[COMPONENT]",
-    "rareResource": "[RARE RESOURCE]",
-    "pullCurrency": "[PULL CURRENCY]",
-    "oreField1": "[ORE 1 FIELD]",
-    "oreField2": "[ORE 2 FIELD]",
-    "expedition": "[EXPEDITION NAME]",
-    "enemyGroup": "[PIRATE GROUP]"
+    "game": "Iron Meridian [P]",
+    "station": "Kestrel Anchorage [P]",
+    "ore1": "Ferrox [P]",
+    "ore2": "Cindrite [P]",
+    "material1": "Ferrox Alloy [P]",
+    "material2": "Cindrite Plate [P]",
+    "component": "Hull Lattice [P]",
+    "rareResource": "Void Crystal [P]",
+    "pullCurrency": "Recruit Writ [P]",
+    "oreField1": "Ferrox Belt [P]",
+    "oreField2": "Cindrite Drift [P]",
+    "expedition": "Ashfall Patrol [P]",
+    "enemyGroup": "Rustfang Raiders [P]"
   },
   "crafting": {
     "$comment": "One crafting job runs at a time.",
     "maxConcurrentJobs": 1,
     "recipes": {
       "refineOre1": {
-        "name": "Refine [ORE 1]",
-        "inputs": { "ore1": 20 },
-        "output": { "resource": "material1", "amount": 10 },
+        "name": "Refine Ferrox [P]",
+        "inputs": {
+          "ore1": 20
+        },
+        "output": {
+          "resource": "material1",
+          "amount": 10
+        },
         "seconds": 30
       },
       "refineOre2": {
-        "name": "Refine [ORE 2]",
-        "inputs": { "ore2": 20 },
-        "output": { "resource": "material2", "amount": 10 },
+        "name": "Refine Cindrite [P]",
+        "inputs": {
+          "ore2": 20
+        },
+        "output": {
+          "resource": "material2",
+          "amount": 10
+        },
         "seconds": 30
       },
       "component": {
-        "name": "Manufacture [COMPONENT]",
-        "inputs": { "material1": 10, "material2": 10 },
-        "output": { "resource": "component", "amount": 1 },
+        "name": "Manufacture Hull Lattice [P]",
+        "inputs": {
+          "material1": 10,
+          "material2": 10
+        },
+        "output": {
+          "resource": "component",
+          "amount": 1
+        },
         "seconds": 45
       },
       "frigate": {
-        "name": "Build Frigate",
-        "inputs": { "component": 2 },
-        "output": { "ship": "frigate" },
+        "name": "Build Wren-class Frigate [P]",
+        "inputs": {
+          "component": 2
+        },
+        "output": {
+          "ship": "frigate"
+        },
         "seconds": 60
       },
       "autocannon": {
-        "name": "Craft [AUTOCANNON]",
-        "inputs": { "material2": 10 },
-        "output": { "gear": "autocannon" },
+        "name": "Craft Hailstorm Autocannon [P]",
+        "inputs": {
+          "material2": 10
+        },
+        "output": {
+          "gear": "autocannon"
+        },
         "seconds": 30
       }
     }
   },
   "hulls": {
     "barge": {
-      "name": "[MINING BARGE]",
+      "name": "Mule [P]",
       "class": "Industrial",
       "canMine": true,
       "canFight": false,
-      "stats": { "hp": 300, "defence": 10, "cargo": 60, "miningYield": 40 },
+      "stats": {
+        "hp": 300,
+        "defence": 10,
+        "cargo": 60,
+        "miningYield": 40
+      },
       "gearSlots": 0,
       "innateSkill": null
     },
     "frigate": {
-      "name": "[FRIGATE HULL]",
+      "name": "Wren [P]",
       "class": "Frigate",
       "canMine": true,
       "canFight": true,
-      "stats": { "hp": 400, "defence": 20, "cargo": 20, "miningYield": 15, "firepower": 25 },
+      "stats": {
+        "hp": 400,
+        "defence": 20,
+        "cargo": 20,
+        "miningYield": 15,
+        "firepower": 25
+      },
       "gearSlots": 1,
       "innateSkill": "lastStand"
     }
   },
   "gear": {
-    "autocannon": { "name": "[AUTOCANNON]", "tier": "T1", "bonus": { "firepower": 10 } }
+    "autocannon": {
+      "name": "Hailstorm Autocannon [P]",
+      "tier": "T1",
+      "bonus": {
+        "firepower": 10
+      }
+    }
   },
   "skills": {
     "lastStand": {
-      "name": "[LAST STAND]",
+      "name": "Last Stand [P]",
       "description": "Once per battle, below 30% HP: Defence +50%.",
       "hpBelow": 0.3,
       "defenceMultiplier": 1.5
@@ -89,14 +130,30 @@
   "expedition": {
     "seconds": 90,
     "maxShips": 5,
-    "rewards": { "pullCurrency": 100, "rareResource": 10 }
+    "rewards": {
+      "pullCurrency": 100,
+      "rareResource": 10
+    }
   },
   "enemies": {
-    "pirateFrigate": { "name": "[PIRATE FRIGATE]", "stats": { "hp": 250, "defence": 10, "firepower": 15 } }
+    "pirateFrigate": {
+      "name": "Rustfang Cutter [P]",
+      "stats": {
+        "hp": 250,
+        "defence": 10,
+        "firepower": 15
+      }
+    }
   },
   "enemyGroup": [
-    { "enemy": "pirateFrigate", "row": "front" },
-    { "enemy": "pirateFrigate", "row": "middle" }
+    {
+      "enemy": "pirateFrigate",
+      "row": "front"
+    },
+    {
+      "enemy": "pirateFrigate",
+      "row": "middle"
+    }
   ],
   "battle": {
     "$comment": "Damage per shot = firepower × 100 / (100 + defence).",
@@ -106,14 +163,58 @@
     "damageDefenceScale": 100
   },
   "captains": {
-    "c1": { "name": "[CAPTAIN 1]", "rarity": "common", "bonus": { "firepower": 2 } },
-    "c2": { "name": "[CAPTAIN 2]", "rarity": "rare", "bonus": { "firepower": 4, "defence": 2 } },
-    "c3": { "name": "[CAPTAIN 3]", "rarity": "epic", "bonus": { "firepower": 7, "defence": 4 } },
-    "c4": { "name": "[CAPTAIN 4]", "rarity": "legendary", "bonus": { "firepower": 12, "defence": 6 } },
-    "c5": { "name": "[CAPTAIN 5]", "rarity": "mythical", "bonus": { "firepower": 18, "defence": 10 } }
+    "c1": {
+      "name": "Mara Voss [P]",
+      "rarity": "common",
+      "bonus": {
+        "firepower": 2
+      },
+      "limitBreakMaterial": "Voss Insignia [P]"
+    },
+    "c2": {
+      "name": "Ines Kade [P]",
+      "rarity": "rare",
+      "bonus": {
+        "firepower": 4,
+        "defence": 2
+      },
+      "limitBreakMaterial": "Kade Insignia [P]"
+    },
+    "c3": {
+      "name": "Sora Hale [P]",
+      "rarity": "epic",
+      "bonus": {
+        "firepower": 7,
+        "defence": 4
+      },
+      "limitBreakMaterial": "Hale Insignia [P]"
+    },
+    "c4": {
+      "name": "Vey Ashcroft [P]",
+      "rarity": "legendary",
+      "bonus": {
+        "firepower": 12,
+        "defence": 6
+      },
+      "limitBreakMaterial": "Ashcroft Insignia [P]"
+    },
+    "c5": {
+      "name": "Nyx Calder [P]",
+      "rarity": "mythical",
+      "bonus": {
+        "firepower": 18,
+        "defence": 10
+      },
+      "limitBreakMaterial": "Calder Insignia [P]"
+    }
   },
   "gacha": {
     "pullPrice": 100,
-    "exchange": { "rareResource": 10, "pullCurrency": 100 }
+    "exchange": {
+      "rareResource": 10,
+      "pullCurrency": 100
+    },
+    "historyKeep": 200,
+    "limitBreakMaterialPerDuplicate": 1
   }
 }

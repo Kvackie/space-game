@@ -7,6 +7,7 @@ import './theme.css'
 
 import { Engine } from '@babylonjs/core/Engines/engine'
 import type { Scene } from '@babylonjs/core/scene'
+import { NAMES } from './data'
 import { registerCrafting } from './game/crafting'
 import { registerExpedition } from './game/expedition'
 import { registerMining } from './game/mining'
@@ -26,6 +27,8 @@ import { fleetScreen } from './ui/screens/fleet'
 import { miningScreen } from './ui/screens/mining'
 import { recruitScreen } from './ui/screens/recruit'
 import { settingsScreen } from './ui/screens/settings'
+
+document.title = NAMES.game
 
 const gameArea = document.getElementById('game')!
 const canvas = document.getElementById('world') as HTMLCanvasElement
