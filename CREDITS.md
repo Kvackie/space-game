@@ -4,11 +4,11 @@ Every third-party asset in the game, with its source and licence. Anything not l
 
 ## Third-party assets
 
-| Asset                   | Used for         | Source                                                                                                                                           | Author                      | Licence                   | Attribution required                     |
-| ----------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- | ------------------------- | ---------------------------------------- |
-| Oxanium                 | Display font     | [Google Fonts](https://fonts.google.com/specimen/Oxanium) via [Fontsource](https://fontsource.org/fonts/oxanium)                                 | The Oxanium Project Authors | SIL Open Font License 1.1 | No (licence travels with the font files) |
-| IBM Plex Sans Condensed | Body font        | [Google Fonts](https://fonts.google.com/specimen/IBM+Plex+Sans+Condensed) via [Fontsource](https://fontsource.org/fonts/ibm-plex-sans-condensed) | IBM                         | SIL Open Font License 1.1 | No (licence travels with the font files) |
-| JetBrains Mono          | Data/number font | [Google Fonts](https://fonts.google.com/specimen/JetBrains+Mono) via [Fontsource](https://fontsource.org/fonts/jetbrains-mono)                   | JetBrains                   | SIL Open Font License 1.1 | No (licence travels with the font files) |
+| Asset                   | Used for         | Source                                                                                                                                           | Author                             | Licence                   | Attribution required                     |
+| ----------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- | ------------------------- | ---------------------------------------- |
+| Oxanium                 | Display font     | [Google Fonts](https://fonts.google.com/specimen/Oxanium) via [Fontsource](https://fontsource.org/fonts/oxanium)                                 | The Oxanium Project Authors        | SIL Open Font License 1.1 | No (licence travels with the font files) |
+| IBM Plex Sans Condensed | Body font        | [Google Fonts](https://fonts.google.com/specimen/IBM+Plex+Sans+Condensed) via [Fontsource](https://fontsource.org/fonts/ibm-plex-sans-condensed) | IBM Corp.                          | SIL Open Font License 1.1 | No (licence travels with the font files) |
+| JetBrains Mono          | Data/number font | [Google Fonts](https://fonts.google.com/specimen/JetBrains+Mono) via [Fontsource](https://fontsource.org/fonts/jetbrains-mono)                   | The JetBrains Mono Project Authors | SIL Open Font License 1.1 | No (licence travels with the font files) |
 
 ## Software
 
