@@ -6,19 +6,22 @@ import '@fontsource/jetbrains-mono/400.css'
 import './theme.css'
 
 import { Engine } from '@babylonjs/core/Engines/engine'
+import type { Scene } from '@babylonjs/core/scene'
 import { registerCrafting } from './game/crafting'
 import { registerExpedition } from './game/expedition'
 import { registerMining } from './game/mining'
 import { startSession } from './game/session'
 import { applyLayout, computeLayout } from './layout'
+import { createBattleView, type BattleView } from './render/battleView'
 import { applyQuality } from './render/quality'
 import { createStationScene } from './render/stationScene'
+import { createBattleHud } from './ui/battleHud'
 import { createFpsCounter } from './ui/fps'
 import { createHub } from './ui/hub'
 import { ScreenHost } from './ui/screens'
 import { captainsScreen } from './ui/screens/captains'
 import { craftingScreen } from './ui/screens/crafting'
-import { expeditionsScreen } from './ui/screens/expeditions'
+import { expeditionHooks, expeditionsScreen } from './ui/screens/expeditions'
 import { fleetScreen } from './ui/screens/fleet'
 import { miningScreen } from './ui/screens/mining'
 import { recruitScreen } from './ui/screens/recruit'
@@ -38,8 +41,9 @@ const relayout = () => {
 relayout()
 addEventListener('resize', relayout)
 
-const scene = createStationScene(engine)
-engine.runRenderLoop(() => scene.render())
+const stationScene = createStationScene(engine)
+let activeScene: Scene = stationScene
+engine.runRenderLoop(() => activeScene.render())
 
 const session = await startSession((clock) => {
   registerCrafting(clock)
@@ -64,6 +68,26 @@ for (const screen of [
   screens.register(screen)
 createHub(ui, store, screens)
 createFpsCounter(ui, engine, store)
+
+// battle replays: the battle view loads on first use
+const battleHud = createBattleHud(ui)
+let battleView: Promise<BattleView> | null = null
+expeditionHooks.watch = async (battleId) => {
+  const record = store.state.battles.find((b) => b.id === battleId)
+  if (!record) return
+  screens.close()
+  battleView ??= createBattleView(engine)
+  const view = await battleView
+  const leave = () => {
+    view.stop()
+    battleHud.hide()
+    activeScene = stationScene
+  }
+  battleHud.show(record, leave)
+  activeScene = view.scene
+  view.play(record, () => battleHud.showResult(record))
+}
+store.changed()
 
 // dev-only handle for inspecting and editing the game from the console
 if (import.meta.env.DEV) {

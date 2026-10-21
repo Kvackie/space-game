@@ -24,6 +24,8 @@ export interface CombatantInit {
   defence: number
   firepower: number
   skill: string | null
+  /** Which 3D model shows this ship in the battle view. */
+  model?: string
 }
 
 export type BattleEvent =

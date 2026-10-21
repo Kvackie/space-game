@@ -49,6 +49,7 @@ export function enemyFighters(): CombatantInit[] {
       defence: def.stats.defence ?? 0,
       firepower: def.stats.firepower ?? 0,
       skill: null,
+      model: 'pirate',
     }
   })
 }
@@ -70,6 +71,7 @@ export function startExpedition(state: GameState, formation: FormationSlot[], no
       defence: stats.defence ?? 0,
       firepower: stats.firepower ?? 0,
       skill: HULLS[ship.hull].innateSkill,
+      model: ship.hull,
     }
   })
   startTimer(state, EXPEDITION_TIMER, EXPEDITION.seconds * 1000, now, {

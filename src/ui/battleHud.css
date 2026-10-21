@@ -1,0 +1,61 @@
+/* While a battle plays, the station UI steps aside. */
+#ui.in-battle > :not(.battle-hud):not(.fps) {
+  display: none;
+}
+
+.battle-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.battle-hud[hidden] {
+  display: none;
+}
+
+.battle-hud > * {
+  pointer-events: auto;
+}
+
+.battle-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+}
+
+.battle-result {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  border: 1px solid var(--line);
+  clip-path: polygon(0 0, calc(100% - 1rem) 0, 100% 1rem, 100% 100%, 1rem 100%, 0 calc(100% - 1rem));
+}
+
+.battle-result[hidden] {
+  display: none;
+}
+
+.battle-outcome {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--holo);
+}
