@@ -426,6 +426,8 @@ export async function createThreeWorld(opts: {
       if (world.scene !== 'battle') return null
       ndc.set((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1)
       raycaster.setFromCamera(ndc, camera)
+      // instanced bounds are cached from the first raycast; ships have moved since
+      fleets.forEach((m) => m.computeBoundingSphere())
       const hit = raycaster.intersectObjects(fleets, false)[0]
       if (!hit || hit.instanceId === undefined) return null
       return teamIndex[fleets.indexOf(hit.object as THREE.InstancedMesh)][hit.instanceId]

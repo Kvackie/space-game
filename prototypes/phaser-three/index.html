@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Phaser + three.js</title>
+    <style>
+      /* Phaser's transparent canvas sits over the three.js canvas and owns input */
+      #phaser-root { position: fixed; inset: 0; z-index: 5; }
+    </style>
+  </head>
+  <body>
+    <canvas id="stage" class="stage"></canvas>
+    <div id="phaser-root"></div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
