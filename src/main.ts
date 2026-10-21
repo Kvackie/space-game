@@ -10,21 +10,22 @@ import { registerCrafting } from './game/crafting'
 import { registerMining } from './game/mining'
 import { startSession } from './game/session'
 import { applyLayout, computeLayout } from './layout'
+import { applyQuality } from './render/quality'
 import { createStationScene } from './render/stationScene'
+import { createFpsCounter } from './ui/fps'
 import { createHub } from './ui/hub'
 import { ScreenHost } from './ui/screens'
 import { craftingScreen } from './ui/screens/crafting'
+import { fleetScreen } from './ui/screens/fleet'
 import { miningScreen } from './ui/screens/mining'
-
-/** Device pixel ratio cap: sharper than this costs a lot on phones for little gain. */
-const MAX_PIXEL_RATIO = 2
+import { settingsScreen } from './ui/screens/settings'
 
 const gameArea = document.getElementById('game')!
 const canvas = document.getElementById('world') as HTMLCanvasElement
 const ui = document.getElementById('ui')!
 
 const engine = new Engine(canvas, true, { powerPreference: 'high-performance' }, false)
-engine.setHardwareScalingLevel(1 / Math.min(devicePixelRatio, MAX_PIXEL_RATIO))
+applyQuality(engine, 'high')
 
 const relayout = () => {
   applyLayout(gameArea, computeLayout({ width: innerWidth, height: innerHeight }))
@@ -42,10 +43,13 @@ const session = await startSession((clock) => {
 })
 if (session.loadError) console.error(`Save could not be loaded and was kept aside: ${session.loadError}`)
 
-const screens = new ScreenHost(ui, session.store)
-screens.register(craftingScreen)
-screens.register(miningScreen)
-createHub(ui, session.store, screens)
+const { store } = session
+store.subscribe((state) => applyQuality(engine, state.settings.quality))
+
+const screens = new ScreenHost(ui, store)
+for (const screen of [fleetScreen, craftingScreen, miningScreen, settingsScreen]) screens.register(screen)
+createHub(ui, store, screens)
+createFpsCounter(ui, engine, store)
 
 // dev-only handle for inspecting and editing the game from the console
 if (import.meta.env.DEV) {

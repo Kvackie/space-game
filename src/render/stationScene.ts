@@ -8,7 +8,6 @@ import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
 import type { Engine } from '@babylonjs/core/Engines/engine'
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight'
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight'
-import { ImageProcessingConfiguration } from '@babylonjs/core/Materials/imageProcessingConfiguration'
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
@@ -19,8 +18,8 @@ import { CreateSphere } from '@babylonjs/core/Meshes/Builders/sphereBuilder'
 import { CreateTorus } from '@babylonjs/core/Meshes/Builders/torusBuilder'
 import { Mesh } from '@babylonjs/core/Meshes/mesh'
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode'
-import { DefaultRenderingPipeline } from '@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/defaultRenderingPipeline'
 import { Scene } from '@babylonjs/core/scene'
+import { createPipeline } from './quality'
 
 const COLOURS = {
   bg: '#070b14',
@@ -156,17 +155,7 @@ export function createStationScene(engine: Engine): Scene {
 
   buildStation(scene)
 
-  // subtle glow on emissive lights only (bloom kept low, see the prototype review)
-  const pipeline = new DefaultRenderingPipeline('pipeline', true, scene, [camera])
-  pipeline.samples = 4
-  pipeline.bloomEnabled = true
-  pipeline.bloomThreshold = 0.9
-  pipeline.bloomWeight = 0.25
-  pipeline.bloomKernel = 32
-  pipeline.bloomScale = 0.5
-  pipeline.imageProcessingEnabled = true
-  pipeline.imageProcessing.toneMappingEnabled = true
-  pipeline.imageProcessing.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_KHR_PBR_NEUTRAL
+  createPipeline(scene, camera)
 
   return scene
 }
