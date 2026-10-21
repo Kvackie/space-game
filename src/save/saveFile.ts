@@ -130,7 +130,7 @@ function validate(save: RawSave): GameState {
       isString(b.id) &&
       isNumber(b.at) &&
       isNumber(b.seed) &&
-      Array.isArray(b.fleet) &&
+      Array.isArray(b.fighters) &&
       typeof b.won === 'boolean' &&
       isRecord(b.rewards),
   )

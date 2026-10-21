@@ -3,7 +3,8 @@
  * migration in save/saveFile.ts.
  */
 
-import { HULLS, STARTING_SHIP, type Row } from '../data'
+import { HULLS, STARTING_SHIP } from '../data'
+import type { CombatantInit } from './battle'
 
 export const RESOURCE_IDS = [
   'ore1',
@@ -58,8 +59,8 @@ export interface BattleRecord {
   /** When the battle happened (the expedition's end). */
   at: number
   seed: number
-  /** The player's ships as they fought, with rows. */
-  fleet: { shipId: string; row: Row }[]
+  /** Both sides exactly as they entered battle, so it can be replayed. */
+  fighters: CombatantInit[]
   won: boolean
   rewards: Partial<Record<ResourceId, number>>
 }
