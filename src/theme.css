@@ -70,3 +70,58 @@ button:focus-visible {
   outline: 2px solid var(--holo);
   outline-offset: 2px;
 }
+
+/* Rarity colours: the D-18 hues, muted, with a glow (D-83) */
+:root {
+  --rarity-common: #9aa3ad;
+  --rarity-rare: #5b8fd1;
+  --rarity-epic: #a98bd4;
+  --rarity-legendary: #d1ad5b;
+  --rarity-mythical: #e07fb8;
+}
+
+.rarity-common {
+  color: var(--rarity-common);
+}
+.rarity-rare {
+  color: var(--rarity-rare);
+  text-shadow: 0 0 0.5rem color-mix(in srgb, var(--rarity-rare) 45%, transparent);
+}
+.rarity-epic {
+  color: var(--rarity-epic);
+  text-shadow: 0 0 0.5rem color-mix(in srgb, var(--rarity-epic) 45%, transparent);
+}
+.rarity-legendary {
+  color: var(--rarity-legendary);
+  text-shadow: 0 0 0.5rem color-mix(in srgb, var(--rarity-legendary) 50%, transparent);
+}
+.rarity-mythical {
+  background: linear-gradient(90deg, #e07f7f, #d1ad5b, #7fd18f, #5b8fd1, #a98bd4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 0.375rem rgba(224, 127, 184, 0.45));
+}
+
+.rarity-common,
+.rarity-rare,
+.rarity-epic,
+.rarity-legendary,
+.rarity-mythical {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+}
+
+.fps {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.375rem;
+  padding: 0.125rem 0.375rem;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  color: var(--holo);
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
