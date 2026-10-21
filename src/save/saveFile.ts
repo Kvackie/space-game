@@ -8,7 +8,7 @@
 import { HULLS, STARTING_SHIP } from '../data'
 import { DEFAULT_SETTINGS, RESOURCE_IDS, type GameState } from '../game/state'
 
-export const SAVE_VERSION = 2
+export const SAVE_VERSION = 3
 
 type RawSave = Record<string, unknown>
 
@@ -39,6 +39,15 @@ const MIGRATIONS: Record<number, (save: RawSave) => RawSave> = {
       nextId,
     }
   },
+  // v3: duplicates become Limit Break material (D-108); pull history (D-109)
+  2: (save) => ({
+    ...save,
+    captains: (save.captains as RawSave[]).map(({ duplicates, ...captain }) => ({
+      ...captain,
+      limitBreakMaterial: Number(duplicates) || 0,
+    })),
+    gacha: { ...(save.gacha as RawSave), history: [] },
+  }),
 }
 
 export class SaveError extends Error {}
@@ -123,7 +132,7 @@ function validate(save: RawSave): GameState {
       isStringOrNull(s.captainId),
   )
   list('gear', (g) => isString(g.id) && isString(g.type))
-  list('captains', (c) => isString(c.id) && isString(c.def) && isNumber(c.duplicates))
+  list('captains', (c) => isString(c.id) && isString(c.def) && isNumber(c.limitBreakMaterial))
   list(
     'battles',
     (b) =>
@@ -136,6 +145,13 @@ function validate(save: RawSave): GameState {
   )
 
   if (!isRecord(save.gacha) || !isNumber(save.gacha.pity)) fail('gacha')
+  const history = (save.gacha as RawSave).history
+  if (
+    !Array.isArray(history) ||
+    !history.every((p) => isRecord(p) && isNumber(p.at) && isString(p.def) && typeof p.duplicate === 'boolean')
+  ) {
+    fail('gacha.history')
+  }
   if (!isRecord(save.settings) || !['high', 'low'].includes(save.settings.quality as string)) fail('settings')
   if (typeof (save.settings as RawSave).showFps !== 'boolean') fail('settings.showFps')
 

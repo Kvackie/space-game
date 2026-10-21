@@ -49,13 +49,14 @@ describe('gacha', () => {
     expect(state.gacha.pity).toBe(1)
   })
 
-  it('counts duplicates on the captain already owned (D-62)', () => {
+  it("turns duplicates into that captain's Limit Break material (D-108)", () => {
     const state = rich(2)
     const [first, second] = pull(state, 2, () => 0)
     expect(first.duplicate).toBe(false)
     expect(second.duplicate).toBe(true)
     expect(state.captains).toHaveLength(1)
-    expect(state.captains[0].duplicates).toBe(1)
+    expect(state.captains[0].limitBreakMaterial).toBe(GACHA.limitBreakMaterialPerDuplicate)
+    expect(state.gacha.history.map((p) => p.duplicate)).toEqual([true, false])
   })
 
   it('exchanges the rare resource for pull currency at the fixed rate (D-61)', () => {

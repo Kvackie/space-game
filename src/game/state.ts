@@ -50,8 +50,15 @@ export interface GearItem {
 export interface Captain {
   id: string
   def: string
-  /** Duplicates pulled; their effect is still open (D-62). */
-  duplicates: number
+  /** Limit Break material from duplicates of this captain (D-108); spent once captain levelling exists. */
+  limitBreakMaterial: number
+}
+
+/** One captain pulled, for the pull history (D-109). Newest first. */
+export interface PullRecord {
+  at: number
+  def: string
+  duplicate: boolean
 }
 
 export interface BattleRecord {
@@ -79,7 +86,7 @@ export interface GameState {
   ships: Ship[]
   gear: GearItem[]
   captains: Captain[]
-  gacha: { pity: number }
+  gacha: { pity: number; history: PullRecord[] }
   battles: BattleRecord[]
   settings: Settings
   /** Counter for unique ids (timers, ships, gear, captains, battles). */
@@ -108,7 +115,7 @@ export function createShip(state: GameState, hull: string): Ship {
 
 export function newGame(now: number): GameState {
   const state: GameState = {
-    version: 2,
+    version: 3,
     createdAt: now,
     savedAt: now,
     // no starting resources (D-86)
@@ -117,7 +124,7 @@ export function newGame(now: number): GameState {
     ships: [],
     gear: [],
     captains: [],
-    gacha: { pity: 0 },
+    gacha: { pity: 0, history: [] },
     battles: [],
     settings: { ...DEFAULT_SETTINGS },
     nextId: 1,

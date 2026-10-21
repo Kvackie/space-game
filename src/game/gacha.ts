@@ -6,8 +6,8 @@
  *   the counter resets whenever either drops (D-59).
  * - Single and 10-pulls cost the same per pull (D-60).
  * - The rare resource converts to pull currency at a fixed rate (D-61).
- * - A duplicate strengthens the owned captain; what that does is still open
- *   (D-62), so for now it is only counted.
+ * - A duplicate becomes Limit Break material for that captain (D-108).
+ * - Every pull is kept in the pull history (D-109).
  */
 
 import { CAPTAINS, GACHA, RARITY_ORDER, type Rarity } from '../data'
@@ -35,7 +35,12 @@ export function rollRarity(random: () => number, pity: number): Rarity {
   return RARITY_ORDER[0]
 }
 
-export function pull(state: GameState, count: number, random: () => number = Math.random): PullResult[] {
+export function pull(
+  state: GameState,
+  count: number,
+  random: () => number = Math.random,
+  now: number = Date.now(),
+): PullResult[] {
   const reason = cannotPull(state, count)
   if (reason) throw new Error(reason)
   state.resources.pullCurrency -= pullCost(count)
@@ -48,10 +53,12 @@ export function pull(state: GameState, count: number, random: () => number = Mat
     const pool = Object.keys(CAPTAINS).filter((id) => CAPTAINS[id].rarity === rarity)
     const def = pool[Math.floor(random() * pool.length)]
     const owned = state.captains.find((c) => c.def === def)
-    if (owned) owned.duplicates++
-    else state.captains.push({ id: newId(state, 'c'), def, duplicates: 0 })
+    if (owned) owned.limitBreakMaterial += GACHA.limitBreakMaterialPerDuplicate
+    else state.captains.push({ id: newId(state, 'c'), def, limitBreakMaterial: 0 })
     results.push({ def, rarity, duplicate: !!owned })
+    state.gacha.history.unshift({ at: now, def, duplicate: !!owned })
   }
+  state.gacha.history.length = Math.min(state.gacha.history.length, GACHA.historyKeep)
   return results
 }
 

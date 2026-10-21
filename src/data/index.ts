@@ -32,6 +32,8 @@ export interface CaptainDef {
   name: string
   rarity: Rarity
   bonus: Stats
+  /** Name of this captain's Limit Break material (D-108). */
+  limitBreakMaterial: string
 }
 
 export const NAMES = placeholders.names

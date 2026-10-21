@@ -10,7 +10,7 @@ function setup() {
   const a = createShip(state, 'frigate')
   const b = createShip(state, 'frigate')
   state.gear.push({ id: 'g1', type: 'autocannon' })
-  state.captains.push({ id: 'c1', def: 'c3', duplicates: 0 })
+  state.captains.push({ id: 'c1', def: 'c3', limitBreakMaterial: 0 })
   return { state, a, b }
 }
 

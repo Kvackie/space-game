@@ -115,8 +115,17 @@ export const captainsScreen: ScreenDef = {
         h('div', { class: 'kv' }, h('span', {}, 'Rarity'), h('span', { class: `rarity-${def.rarity}` }, def.rarity)),
         h('div', { class: 'kv' }, h('span', {}, 'Bonus'), h('span', {}, bonusText(captain.def))),
         h('div', { class: 'kv' }, h('span', {}, 'Ship'), h('span', {}, ship?.name ?? 'Unassigned')),
-        captain.duplicates > 0 &&
-          h('div', { class: 'kv' }, h('span', {}, 'Duplicates'), h('span', {}, String(captain.duplicates))),
+        h(
+          'div',
+          { class: 'kv' },
+          h('span', {}, def.limitBreakMaterial),
+          h('span', {}, String(captain.limitBreakMaterial)),
+        ),
+        h(
+          'p',
+          { class: 'empty' },
+          'Duplicates become Limit Break material. Limit Breaks arrive with captain levelling.',
+        ),
       ),
       assign,
     )

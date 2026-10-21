@@ -79,7 +79,7 @@ export const recruitScreen: ScreenDef = {
                   h('span', { class: 'row-name' }, CAPTAINS[r.def].name),
                   h('span', { class: `rarity-${r.rarity}` }, r.rarity),
                 ),
-                r.duplicate && h('span', { class: 'badge' }, 'Duplicate'),
+                r.duplicate && h('span', { class: 'badge' }, `+ ${CAPTAINS[r.def].limitBreakMaterial}`),
               ),
             ),
           ),
@@ -105,6 +105,36 @@ export const recruitScreen: ScreenDef = {
           },
           `${GACHA.exchange.rareResource} ${NAMES.rareResource} → ${GACHA.exchange.pullCurrency} ${NAMES.pullCurrency}`,
         ),
+      ),
+      h(
+        'section',
+        { class: 'section' },
+        h('h3', { class: 'section-title' }, `Pull history (last ${GACHA.historyKeep})`),
+        state.gacha.history.length
+          ? h(
+              'div',
+              { class: 'rows' },
+              ...state.gacha.history.map((p) => {
+                const def = CAPTAINS[p.def]
+                return h(
+                  'div',
+                  { class: 'row' },
+                  h(
+                    'div',
+                    { class: 'row-main' },
+                    h('span', { class: 'row-name' }, def.name),
+                    h(
+                      'span',
+                      { class: 'row-detail' },
+                      new Date(p.at).toLocaleString(),
+                      p.duplicate ? ` · became ${def.limitBreakMaterial}` : '',
+                    ),
+                  ),
+                  h('span', { class: `rarity-${def.rarity}` }, def.rarity),
+                )
+              }),
+            )
+          : h('p', { class: 'empty' }, 'No pulls yet.'),
       ),
     )
   },

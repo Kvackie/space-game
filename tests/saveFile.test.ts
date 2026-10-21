@@ -63,3 +63,12 @@ describe('save file', () => {
     expect(deserialize(serialize(edited)).resources.pullCurrency).toBe(999_999)
   })
 })
+
+describe('save version 3', () => {
+  it('turns version 2 duplicate counts into Limit Break material and adds an empty pull history', () => {
+    const v2 = { ...newGame(0), version: 2, gacha: { pity: 3 }, captains: [{ id: 'c9', def: 'c2', duplicates: 2 }] }
+    const upgraded = deserialize(JSON.stringify(v2))
+    expect(upgraded.captains).toEqual([{ id: 'c9', def: 'c2', limitBreakMaterial: 2 }])
+    expect(upgraded.gacha).toEqual({ pity: 3, history: [] })
+  })
+})
