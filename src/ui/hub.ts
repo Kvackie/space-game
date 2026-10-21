@@ -5,16 +5,13 @@
  */
 
 import placeholders from '../data/placeholders.json'
+import { RESOURCE_IDS } from '../game/state'
+import type { GameStore } from '../game/store'
 import './hub.css'
 
 const MODULES = ['Fleet', 'Crafting', 'Mining', 'Expeditions', 'Recruit', 'Captains'] as const
 
-const RESOURCES = [
-  placeholders.names.ore1,
-  placeholders.names.ore2,
-  placeholders.names.rareResource,
-  placeholders.names.pullCurrency,
-]
+const numberFormat = new Intl.NumberFormat('en')
 
 const GEAR_ICON = `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>`
 
@@ -29,7 +26,7 @@ function el<K extends keyof HTMLElementTagNameMap>(
   return node
 }
 
-export function createHub(root: HTMLElement): void {
+export function createHub(root: HTMLElement, store: GameStore): void {
   const header = el('header', 'hub-header')
 
   const title = el('div', 'hub-title')
@@ -37,14 +34,18 @@ export function createHub(root: HTMLElement): void {
   titleText.append(el('span', 'hub-label', 'Station'), el('h1', 'hub-name', placeholders.names.station))
   title.append(titleText)
 
-  // starting resources are zero (D-86)
   const resources = el('ul', 'hub-resources')
   resources.setAttribute('aria-label', 'Resources')
-  for (const name of RESOURCES) {
+  const amounts = RESOURCE_IDS.map((id) => {
     const item = el('li')
-    item.append(el('span', 'hub-label', name), el('span', undefined, '0'))
+    const amount = el('span')
+    item.append(el('span', 'hub-label', placeholders.names[id]), amount)
     resources.append(item)
-  }
+    return amount
+  })
+  store.subscribe((state) => {
+    RESOURCE_IDS.forEach((id, i) => (amounts[i].textContent = numberFormat.format(state.resources[id])))
+  })
 
   const settings = el('button', 'hub-icon-button')
   settings.type = 'button'

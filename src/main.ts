@@ -6,6 +6,7 @@ import '@fontsource/jetbrains-mono/400.css'
 import './theme.css'
 
 import { Engine } from '@babylonjs/core/Engines/engine'
+import { startSession } from './game/session'
 import { applyLayout, computeLayout } from './layout'
 import { createStationScene } from './render/stationScene'
 import { createHub } from './ui/hub'
@@ -27,6 +28,15 @@ const relayout = () => {
 relayout()
 addEventListener('resize', relayout)
 
-createHub(ui)
 const scene = createStationScene(engine)
 engine.runRenderLoop(() => scene.render())
+
+const session = await startSession()
+if (session.loadError) console.error(`Save could not be loaded and was kept aside: ${session.loadError}`)
+createHub(ui, session.store)
+
+// dev-only handle for inspecting and editing the game from the console
+if (import.meta.env.DEV) {
+  const transfer = await import('./save/transfer')
+  Object.assign(window, { __game: { session, ...transfer } })
+}
