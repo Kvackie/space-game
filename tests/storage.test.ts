@@ -26,7 +26,7 @@ describe('autosave', () => {
 
   it('turns a burst of actions into one write', async () => {
     const state = newGame(0)
-    const write = vi.fn(async () => {})
+    const write = vi.fn<(text: string) => Promise<void>>(async () => {})
     const autosave = new Autosave(
       () => state,
       write,
@@ -45,7 +45,7 @@ describe('autosave', () => {
   })
 
   it('flushes immediately and skips writing when nothing changed', async () => {
-    const write = vi.fn(async () => {})
+    const write = vi.fn<(text: string) => Promise<void>>(async () => {})
     const autosave = new Autosave(() => newGame(0), write)
 
     await autosave.flush()
