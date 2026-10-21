@@ -13,16 +13,15 @@ import { registerExpedition } from './game/expedition'
 import { registerMining } from './game/mining'
 import { startSession } from './game/session'
 import { applyLayout, computeLayout } from './layout'
-import { createBattleView, type BattleView } from './render/battleView'
 import { applyQuality } from './render/quality'
 import { createStationScene } from './render/stationScene'
-import { createBattleHud } from './ui/battleHud'
 import { createFpsCounter } from './ui/fps'
 import { createHub } from './ui/hub'
+import { wireSceneFlows } from './ui/sceneFlows'
 import { ScreenHost } from './ui/screens'
 import { captainsScreen } from './ui/screens/captains'
 import { craftingScreen } from './ui/screens/crafting'
-import { expeditionHooks, expeditionsScreen } from './ui/screens/expeditions'
+import { expeditionsScreen } from './ui/screens/expeditions'
 import { fleetScreen } from './ui/screens/fleet'
 import { miningScreen } from './ui/screens/mining'
 import { recruitScreen } from './ui/screens/recruit'
@@ -72,28 +71,17 @@ for (const screen of [
 createHub(ui, store, screens)
 createFpsCounter(ui, engine, store)
 
-// battle replays: the battle view loads on first use
-const battleHud = createBattleHud(ui)
-let battleView: Promise<BattleView> | null = null
-expeditionHooks.watch = async (battleId) => {
-  const record = store.state.battles.find((b) => b.id === battleId)
-  if (!record) return
-  screens.close()
-  battleView ??= createBattleView(engine)
-  const view = await battleView
-  const leave = () => {
-    view.stop()
-    battleHud.hide()
-    activeScene = stationScene
-  }
-  battleHud.show(record, leave)
-  activeScene = view.scene
-  view.play(record, () => battleHud.showResult(record))
-}
-store.changed()
+wireSceneFlows({
+  ui,
+  engine,
+  store,
+  screens,
+  stationScene,
+  setActiveScene: (scene) => (activeScene = scene),
+})
 
 // dev-only handle for inspecting and editing the game from the console
 if (import.meta.env.DEV) {
   const transfer = await import('./save/transfer')
-  Object.assign(window, { __game: { session, ...transfer } })
+  Object.assign(window, { __game: { session, engine, stationScene, ...transfer } })
 }

@@ -52,6 +52,8 @@ interface Effect {
 export interface BattleView {
   scene: Scene
   play(record: BattleRecord, onEnd: () => void): void
+  /** Playback speed multiplier (D-110). */
+  setSpeed(speed: number): void
   stop(): void
 }
 
@@ -96,6 +98,7 @@ export async function createBattleView(engine: Engine): Promise<BattleView> {
   let time = 0
   let endAt = Infinity
   let onEnd: (() => void) | null = null
+  let speed = 1
 
   const addEffect = (mesh: Mesh, life: number, update: Effect['update']) => {
     mesh.isPickable = false
@@ -186,7 +189,7 @@ export async function createBattleView(engine: Engine): Promise<BattleView> {
   }
 
   scene.onBeforeRenderObservable.add(() => {
-    const dt = Math.min(0.1, engine.getDeltaTime() / 1000)
+    const dt = Math.min(0.1, engine.getDeltaTime() / 1000) * speed
     time += dt
     while (next < events.length && events[next].t <= time) apply(events[next++])
 
@@ -228,6 +231,9 @@ export async function createBattleView(engine: Engine): Promise<BattleView> {
       time = 0
       endAt = (events.at(-1)?.t ?? 0) + END_PAUSE_SECONDS
       onEnd = finished
+    },
+    setSpeed(value) {
+      speed = value
     },
     stop() {
       onEnd = null

@@ -12,6 +12,9 @@ import type { ScreenDef } from '../screens'
 
 let lastResults: PullResult[] = []
 
+/** Lets the warp animation hook in (D-109). */
+export const recruitHooks: { warp?: (results: PullResult[]) => void } = {}
+
 export const recruitScreen: ScreenDef = {
   id: 'recruit',
   title: 'Recruit',
@@ -19,10 +22,12 @@ export const recruitScreen: ScreenDef = {
   status: (state) => String(Math.floor(state.resources.pullCurrency / GACHA.pullPrice)),
 
   render(state, ctx) {
-    const doPull = (count: number) =>
+    const doPull = (count: number) => {
       ctx.store.update((s) => {
         lastResults = pull(s, count)
       })
+      recruitHooks.warp?.(lastResults)
+    }
 
     const pullButton = (count: number, label: string) => {
       const reason = cannotPull(state, count)

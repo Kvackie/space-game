@@ -61,6 +61,9 @@ export function setUpSpace(scene: Scene): void {
   material.disableLighting = true
   material.disableDepthWrite = true
   material.backFaceCulling = false
+  // black until the star texture has loaded, rather than lit grey-blue
+  material.diffuseColor = Color3.Black()
+  material.specularColor = Color3.Black()
   material.emissiveTexture = starTexture(scene)
   sky.material = material
   sky.isPickable = false

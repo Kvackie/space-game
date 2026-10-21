@@ -1,23 +1,23 @@
-/* While a battle plays, the station UI steps aside. */
-#ui.in-battle > :not(.battle-hud):not(.fps) {
+/* While a full-screen scene plays, the station UI steps aside. */
+#ui.in-scene > :not(.scene-hud):not(.fps) {
   display: none;
 }
 
-.battle-hud {
+.scene-hud {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-.battle-hud[hidden] {
+.scene-hud[hidden] {
   display: none;
 }
 
-.battle-hud > * {
+.scene-hud > * {
   pointer-events: auto;
 }
 
-.battle-bar {
+.scene-bar {
   position: absolute;
   top: 0;
   left: 0;
@@ -31,7 +31,7 @@
   background: color-mix(in srgb, var(--bg) 80%, transparent);
 }
 
-.battle-result {
+.scene-result {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -46,11 +46,11 @@
   clip-path: polygon(0 0, calc(100% - 1rem) 0, 100% 1rem, 100% 100%, 1rem 100%, 0 calc(100% - 1rem));
 }
 
-.battle-result[hidden] {
+.scene-result[hidden] {
   display: none;
 }
 
-.battle-outcome {
+.scene-outcome {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
@@ -58,4 +58,9 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--holo);
+}
+
+.scene-result .rows {
+  max-height: 16rem;
+  overflow-y: auto;
 }
