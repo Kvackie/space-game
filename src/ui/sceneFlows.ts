@@ -12,6 +12,7 @@ import type { GameStore } from '../game/store'
 import { createBattleView, type BattleView } from '../render/battleView'
 import { createWarpView, type WarpView } from '../render/warpView'
 import { h } from './dom'
+import { portrait } from './portrait'
 import { formatNumber } from './format'
 import { createSceneHud } from './sceneHud'
 import type { ScreenHost } from './screens'
@@ -109,6 +110,7 @@ export function wireSceneFlows(opts: {
             h(
               'div',
               { class: 'row' },
+              portrait(CAPTAINS[r.def].portrait, r.rarity, CAPTAINS[r.def].name, 'small'),
               h(
                 'div',
                 { class: 'row-main' },

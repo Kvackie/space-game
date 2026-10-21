@@ -236,3 +236,9 @@
 #game.compact .screen-body {
   padding: 0.75rem 1rem 1rem;
 }
+
+.choice-portrait {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}

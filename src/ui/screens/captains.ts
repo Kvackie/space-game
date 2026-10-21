@@ -5,6 +5,7 @@ import { assignCaptain, captainShip } from '../../game/fleet'
 import { isIdle } from '../../game/ships'
 import type { GameState } from '../../game/state'
 import { h } from '../dom'
+import { portrait } from '../portrait'
 import type { ScreenDef } from '../screens'
 import { STAT_LABELS } from './fleet'
 
@@ -49,7 +50,7 @@ export const captainsScreen: ScreenDef = {
           return h(
             'button',
             {
-              class: 'choice',
+              class: 'choice choice-portrait',
               type: 'button',
               'aria-pressed': String(c.id === selected),
               onclick: () => {
@@ -57,9 +58,14 @@ export const captainsScreen: ScreenDef = {
                 ctx.store.changed()
               },
             },
-            h('span', { class: 'row-name' }, def.name),
-            h('br'),
-            h('span', { class: `rarity-${def.rarity}` }, def.rarity),
+            portrait(def.portrait, def.rarity, def.name, 'small'),
+            h(
+              'span',
+              {},
+              h('span', { class: 'row-name' }, def.name),
+              h('br'),
+              h('span', { class: `rarity-${def.rarity}` }, def.rarity),
+            ),
           )
         }),
       ),
@@ -112,6 +118,7 @@ export const captainsScreen: ScreenDef = {
         'section',
         { class: 'section' },
         h('h3', { class: 'section-title' }, def.name),
+        portrait(def.portrait, def.rarity, def.name, 'large'),
         h('div', { class: 'kv' }, h('span', {}, 'Rarity'), h('span', { class: `rarity-${def.rarity}` }, def.rarity)),
         h('div', { class: 'kv' }, h('span', {}, 'Bonus'), h('span', {}, bonusText(captain.def))),
         h('div', { class: 'kv' }, h('span', {}, 'Ship'), h('span', {}, ship?.name ?? 'Unassigned')),

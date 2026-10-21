@@ -169,7 +169,15 @@
       "bonus": {
         "firepower": 2
       },
-      "limitBreakMaterial": "Voss Insignia [P]"
+      "limitBreakMaterial": "Voss Insignia [P]",
+      "portrait": {
+        "skin": "#e9c3a8",
+        "hair": "#5a4636",
+        "style": "short",
+        "eyes": "#6b8a5a",
+        "uniform": "#2b3446",
+        "accessory": "headset"
+      }
     },
     "c2": {
       "name": "Ines Kade [P]",
@@ -178,7 +186,15 @@
         "firepower": 4,
         "defence": 2
       },
-      "limitBreakMaterial": "Kade Insignia [P]"
+      "limitBreakMaterial": "Kade Insignia [P]",
+      "portrait": {
+        "skin": "#f1d0b8",
+        "hair": "#2d3a5c",
+        "style": "bob",
+        "eyes": "#4f7fc9",
+        "uniform": "#243049",
+        "accessory": "visor"
+      }
     },
     "c3": {
       "name": "Sora Hale [P]",
@@ -187,7 +203,15 @@
         "firepower": 7,
         "defence": 4
       },
-      "limitBreakMaterial": "Hale Insignia [P]"
+      "limitBreakMaterial": "Hale Insignia [P]",
+      "portrait": {
+        "skin": "#e3b89a",
+        "hair": "#d9d4e6",
+        "style": "long",
+        "eyes": "#9b6fd1",
+        "uniform": "#272235",
+        "accessory": "none"
+      }
     },
     "c4": {
       "name": "Vey Ashcroft [P]",
@@ -196,7 +220,15 @@
         "firepower": 12,
         "defence": 6
       },
-      "limitBreakMaterial": "Ashcroft Insignia [P]"
+      "limitBreakMaterial": "Ashcroft Insignia [P]",
+      "portrait": {
+        "skin": "#f3d6c2",
+        "hair": "#b5452f",
+        "style": "ponytail",
+        "eyes": "#d1a24a",
+        "uniform": "#2a2a33",
+        "accessory": "scar"
+      }
     },
     "c5": {
       "name": "Nyx Calder [P]",
@@ -205,7 +237,15 @@
         "firepower": 18,
         "defence": 10
       },
-      "limitBreakMaterial": "Calder Insignia [P]"
+      "limitBreakMaterial": "Calder Insignia [P]",
+      "portrait": {
+        "skin": "#efd1c4",
+        "hair": "#121218",
+        "style": "twintails",
+        "eyes": "#e0507f",
+        "uniform": "#1c1a24",
+        "accessory": "eyepatch"
+      }
     }
   },
   "gacha": {

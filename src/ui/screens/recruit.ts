@@ -7,6 +7,7 @@
 import { CAPTAINS, GACHA, NAMES } from '../../data'
 import { cannotExchange, cannotPull, exchange, pull, pullCost, type PullResult } from '../../game/gacha'
 import { h } from '../dom'
+import { portrait } from '../portrait'
 import { formatNumber } from '../format'
 import type { ScreenDef } from '../screens'
 
@@ -78,6 +79,7 @@ export const recruitScreen: ScreenDef = {
               h(
                 'div',
                 { class: 'row' },
+                portrait(CAPTAINS[r.def].portrait, r.rarity, CAPTAINS[r.def].name, 'small'),
                 h(
                   'div',
                   { class: 'row-main' },

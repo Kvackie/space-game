@@ -28,12 +28,25 @@ export interface RecipeDef {
   seconds: number
 }
 
+/** Stand-in portrait traits (D-101); see ui/portrait.ts. */
+export interface PortraitTraits {
+  skin: string
+  hair: string
+  /** back hair silhouette */
+  style: 'long' | 'bob' | 'ponytail' | 'short' | 'twintails'
+  eyes: string
+  uniform: string
+  accessory: 'headset' | 'visor' | 'eyepatch' | 'scar' | 'none'
+}
+
 export interface CaptainDef {
   name: string
   rarity: Rarity
   bonus: Stats
   /** Name of this captain's Limit Break material (D-108). */
   limitBreakMaterial: string
+  /** Stand-in portrait traits (D-101). */
+  portrait: PortraitTraits
 }
 
 export const NAMES = placeholders.names
@@ -47,7 +60,7 @@ export const EXPEDITION = placeholders.expedition
 export const ENEMIES = placeholders.enemies as Record<string, { name: string; stats: Stats }>
 export const ENEMY_GROUP = placeholders.enemyGroup as { enemy: string; row: Row }[]
 export const BATTLE = placeholders.battle
-export const CAPTAINS = placeholders.captains as Record<string, CaptainDef>
+export const CAPTAINS = placeholders.captains as unknown as Record<string, CaptainDef>
 export const GACHA = { ...placeholders.gacha, ...rules.gacha, rates: rules.gacha.rates as Record<Rarity, number> }
 export const ROWS = rules.formationRows as Row[]
 export const RARITY_ORDER = rules.rarityOrder as Rarity[]
