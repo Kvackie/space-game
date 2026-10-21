@@ -7,6 +7,7 @@ import './theme.css'
 
 import { Engine } from '@babylonjs/core/Engines/engine'
 import { registerCrafting } from './game/crafting'
+import { registerExpedition } from './game/expedition'
 import { registerMining } from './game/mining'
 import { startSession } from './game/session'
 import { applyLayout, computeLayout } from './layout'
@@ -16,6 +17,7 @@ import { createFpsCounter } from './ui/fps'
 import { createHub } from './ui/hub'
 import { ScreenHost } from './ui/screens'
 import { craftingScreen } from './ui/screens/crafting'
+import { expeditionsScreen } from './ui/screens/expeditions'
 import { fleetScreen } from './ui/screens/fleet'
 import { miningScreen } from './ui/screens/mining'
 import { settingsScreen } from './ui/screens/settings'
@@ -40,6 +42,7 @@ engine.runRenderLoop(() => scene.render())
 const session = await startSession((clock) => {
   registerCrafting(clock)
   registerMining(clock)
+  registerExpedition(clock)
 })
 if (session.loadError) console.error(`Save could not be loaded and was kept aside: ${session.loadError}`)
 
@@ -47,7 +50,8 @@ const { store } = session
 store.subscribe((state) => applyQuality(engine, state.settings.quality))
 
 const screens = new ScreenHost(ui, store)
-for (const screen of [fleetScreen, craftingScreen, miningScreen, settingsScreen]) screens.register(screen)
+for (const screen of [fleetScreen, craftingScreen, miningScreen, expeditionsScreen, settingsScreen])
+  screens.register(screen)
 createHub(ui, store, screens)
 createFpsCounter(ui, engine, store)
 
