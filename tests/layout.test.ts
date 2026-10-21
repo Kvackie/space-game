@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeLayout, MAX_ASPECT, MIN_ASPECT } from '../src/layout'
+import { computeLayout, MAX_ASPECT, MIN_ASPECT, MIN_UI_SCALE } from '../src/layout'
 
 describe('computeLayout', () => {
   it('fills a 16:9 screen at the design scale', () => {
@@ -34,13 +34,14 @@ describe('computeLayout', () => {
     expect(layout.y).toBeCloseTo((1024 - 768 / MIN_ASPECT) / 2)
   })
 
-  it('scales the UI by the tighter of width and height', () => {
+  it('scales the UI up by the tighter of width and height', () => {
     expect(computeLayout({ width: 2560, height: 1080 }).uiScale).toBeCloseTo(1.5)
-    expect(computeLayout({ width: 1024, height: 768 }).uiScale).toBeCloseTo(0.8)
+    expect(computeLayout({ width: 1920, height: 1080 }).uiScale).toBeCloseTo(1.5)
   })
 
-  it('stops shrinking the UI below the minimum supported screen', () => {
-    const atMinimum = computeLayout({ width: 780, height: 360 }).uiScale
-    expect(computeLayout({ width: 400, height: 200 }).uiScale).toBe(atMinimum)
+  it('never shrinks the UI below its design size, so phones stay readable', () => {
+    expect(computeLayout({ width: 1024, height: 768 }).uiScale).toBe(MIN_UI_SCALE)
+    expect(computeLayout({ width: 780, height: 360 }).uiScale).toBe(MIN_UI_SCALE)
+    expect(computeLayout({ width: 400, height: 200 }).uiScale).toBe(MIN_UI_SCALE)
   })
 })
