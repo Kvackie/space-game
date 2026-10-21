@@ -10,6 +10,7 @@ import { ImageProcessingConfiguration } from '@babylonjs/core/Materials/imagePro
 import { DefaultRenderingPipeline } from '@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/defaultRenderingPipeline'
 import type { Scene } from '@babylonjs/core/scene'
 import type { Settings } from '../game/state'
+import { registerPipeline } from './look'
 
 /** Device pixel ratio cap on High: sharper than this costs a lot on phones for little gain. */
 const MAX_PIXEL_RATIO = 2
@@ -35,6 +36,7 @@ export function createPipeline(scene: Scene, camera: Camera): DefaultRenderingPi
   pipeline.imageProcessing.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_KHR_PBR_NEUTRAL
   configure(pipeline)
   pipelines.add(pipeline)
+  registerPipeline(scene, pipeline)
   scene.onDisposeObservable.add(() => pipelines.delete(pipeline))
   return pipeline
 }

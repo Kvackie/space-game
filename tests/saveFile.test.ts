@@ -72,3 +72,10 @@ describe('save version 3', () => {
     expect(upgraded.gacha).toEqual({ pity: 3, history: [] })
   })
 })
+
+describe('save version 4', () => {
+  it('adds the standard 3D look to older saves', () => {
+    const v3 = { ...newGame(0), version: 3, settings: { quality: 'low', showFps: true } }
+    expect(deserialize(JSON.stringify(v3)).settings).toEqual({ quality: 'low', showFps: true, look: 'standard' })
+  })
+})

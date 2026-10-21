@@ -13,6 +13,7 @@ import { registerExpedition } from './game/expedition'
 import { registerMining } from './game/mining'
 import { startSession } from './game/session'
 import { applyLayout, computeLayout } from './layout'
+import { setLook, type Look } from './render/look'
 import { applyQuality } from './render/quality'
 import { createStationScene } from './render/stationScene'
 import { addStationTargets } from './render/stationTargets'
@@ -56,7 +57,10 @@ const session = await startSession((clock) => {
 if (session.loadError) console.error(`Save could not be loaded and was kept aside: ${session.loadError}`)
 
 const { store } = session
-store.subscribe((state) => applyQuality(engine, state.settings.quality))
+store.subscribe((state) => {
+  applyQuality(engine, state.settings.quality)
+  setLook(state.settings.look as Look)
+})
 
 const screens = new ScreenHost(ui, store)
 for (const screen of [

@@ -9,7 +9,8 @@ import { createPipeline } from './quality'
 
 export function createStationScene(engine: Engine): Scene {
   const scene = new Scene(engine)
-  setUpSpace(scene)
+  // the camera sits on the -Z side, so the rim light shines that way
+  setUpSpace(scene, new Vector3(0.5, -0.3, -0.85))
 
   const camera = new ArcRotateCamera('camera', -Math.PI / 3, Math.PI / 2.6, 52, Vector3.Zero(), scene)
   camera.fov = 0.8
