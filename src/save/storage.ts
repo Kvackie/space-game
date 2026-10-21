@@ -45,6 +45,14 @@ export async function deleteSave(): Promise<void> {
 }
 
 /**
+ * Keeps a save that failed to load under its own key, so starting a new game
+ * never overwrites the only copy of something that might still be recovered.
+ */
+export async function keepDamagedSave(text: string, now: number): Promise<void> {
+  await run('readwrite', (store) => store.put(text, `damaged-${now}`))
+}
+
+/**
  * Asks the browser not to clear our storage when space runs low (D-93).
  * Returns null where the browser has no such API.
  */
