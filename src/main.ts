@@ -15,6 +15,7 @@ import { startSession } from './game/session'
 import { applyLayout, computeLayout } from './layout'
 import { applyQuality } from './render/quality'
 import { createStationScene } from './render/stationScene'
+import { addStationTargets } from './render/stationTargets'
 import { createFpsCounter } from './ui/fps'
 import { createHub } from './ui/hub'
 import { wireSceneFlows } from './ui/sceneFlows'
@@ -70,6 +71,8 @@ for (const screen of [
   screens.register(screen)
 createHub(ui, store, screens)
 createFpsCounter(ui, engine, store)
+
+addStationTargets(stationScene, (id) => screens.toggle(id))
 
 wireSceneFlows({
   ui,
