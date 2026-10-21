@@ -58,7 +58,7 @@ import { DEFAULT_SHIPS, MAX_PIXEL_RATIO, type StackApp } from '../shared/stack'
 import * as tex from '../shared/textures'
 import '../shared/style.css'
 
-const MAX_SHIPS_PER_TEAM = 256
+const MAX_SHIPS_PER_TEAM = 1024
 const MAX_BEAMS = 1024
 const MAX_BLASTS = 96
 
@@ -171,7 +171,7 @@ planet.size = BACKDROP.planet.size
 
 // --------------------------------------------------- sprite-based 2D FX ---
 
-const glowSprites = new SpriteManager('glow', dataUrl(tex.glow()), 2048, 128, scene)
+const glowSprites = new SpriteManager('glow', dataUrl(tex.glow()), MAX_SHIPS_PER_TEAM * 4, 128, scene)
 glowSprites.blendMode = Constants.ALPHA_ADD
 const glowPool: Sprite[] = []
 let glowUsed = 0
@@ -444,8 +444,10 @@ createHud(app, stats, (id) => ui.setVisible(id === 'battle'))
 if (import.meta.env.DEV) Object.assign(window, { __scene: scene })
 
 engine.runRenderLoop(() => {
+  const start = performance.now()
   update(Math.min(0.1, engine.getDeltaTime() / 1000))
   scene.render()
   if (current === 'battle') ui.update(battle, selected)
+  stats.work(performance.now() - start)
   stats.frame()
 })

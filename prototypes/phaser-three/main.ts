@@ -61,12 +61,18 @@ class OverlayScene extends Phaser.Scene {
   private cardHp!: Phaser.GameObjects.Text
   private cardBar!: Phaser.GameObjects.Graphics
   private hint!: Phaser.GameObjects.Text
+  private frameStart = 0
 
   constructor() {
     super('Overlay')
   }
 
   create() {
+    // CPU work per frame runs from this scene's update to the end of Phaser's own render
+    this.game.events.on(Phaser.Core.Events.POST_RENDER, () => {
+      if (this.frameStart) stats.work(performance.now() - this.frameStart)
+    })
+
     const res = Math.min(devicePixelRatio, 2)
     // flipbook frames cut from the shared explosion strip
     const strip = this.textures.addCanvas('blast', tex.explosionStrip())!
@@ -139,6 +145,7 @@ class OverlayScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number) {
+    this.frameStart = performance.now()
     world.update(Math.min(0.1, delta / 1000))
     world.render()
     stats.frame()

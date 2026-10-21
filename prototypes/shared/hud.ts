@@ -31,7 +31,7 @@ export function createHud(app: StackApp, stats: FrameStats, onSceneChange?: (id:
       <label class="hud-ships">Ships <input type="range" min="2" max="${Math.max(...BENCH_SHIP_COUNTS)}" step="2" value="${DEFAULT_SHIPS}"><span>${DEFAULT_SHIPS}</span></label>
       <label><input type="checkbox" class="hud-bloom" checked> Bloom</label>
       <pre class="hud-stats"></pre>
-      <button class="hud-bench">Run benchmark (~50 s)</button>
+      <button class="hud-bench">Run benchmark (~55 s)</button>
       <div class="hud-results"></div>
     </div>`
   document.body.appendChild(root)
@@ -77,7 +77,7 @@ export function createHud(app: StackApp, stats: FrameStats, onSceneChange?: (id:
     window.__bench = results
     window.__benchDone = true
     resultsEl.innerHTML = renderResults(results)
-    benchButton.textContent = 'Run benchmark (~50 s)'
+    benchButton.textContent = 'Run benchmark (~55 s)'
     benchButton.disabled = false
   }
   benchButton.addEventListener('click', bench)
@@ -89,6 +89,7 @@ export function createHud(app: StackApp, stats: FrameStats, onSceneChange?: (id:
     statsEl.textContent = [
       `fps      ${s.fps.toFixed(0)}  (1% low ${s.low1.toFixed(0)})`,
       `frame    ${s.ms.toFixed(2)} ms`,
+      `cpu      ${s.cpuMs.toFixed(2)} ms  (p99 ${s.cpuP99.toFixed(2)})`,
       `draws    ${info.drawCalls}   tris ${info.triangles.toLocaleString()}`,
       `heap     ${heap === null ? 'n/a' : heap.toFixed(0) + ' MB'}`,
       `1st frame ${stats.firstFrameMs === null ? '…' : stats.firstFrameMs.toFixed(0) + ' ms'}`,
@@ -104,8 +105,8 @@ function renderResults(results: BenchResult[]): string {
   const rows = results
     .map(
       (r) =>
-        `<tr><td>${r.scene}${r.ships ? ' ×' + r.ships : ''}</td><td>${r.fps.toFixed(0)}</td><td>${r.low1.toFixed(0)}</td><td>${r.drawCalls}</td><td>${r.heapMB?.toFixed(0) ?? '–'}</td></tr>`,
+        `<tr><td>${r.scene}${r.ships ? ' ×' + r.ships : ''}</td><td>${r.fps.toFixed(0)}</td><td>${r.low1.toFixed(0)}</td><td>${r.cpuMs.toFixed(2)}</td><td>${r.drawCalls}</td><td>${r.heapMB?.toFixed(0) ?? '–'}</td></tr>`,
     )
     .join('')
-  return `<table><tr><th>scene</th><th>fps</th><th>1% low</th><th>draws</th><th>MB</th></tr>${rows}</table>`
+  return `<table><tr><th>scene</th><th>fps</th><th>1% low</th><th>cpu ms</th><th>draws</th><th>MB</th></tr>${rows}</table>`
 }

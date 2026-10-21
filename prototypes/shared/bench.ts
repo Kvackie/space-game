@@ -12,7 +12,19 @@ export class FrameStats {
   private times = new Float64Array(WINDOW)
   private count = 0
   private last = 0
+  private works = new Float64Array(WINDOW)
+  private workCount = 0
   firstFrameMs: number | null = null
+
+  /**
+   * CPU time a stack spent on one frame (update + render calls). Unlike fps it
+   * is not capped by the display's refresh rate, so it still separates stacks
+   * when all of them hit the cap.
+   */
+  work(ms: number): void {
+    this.works[this.workCount % WINDOW] = ms
+    this.workCount++
+  }
 
   frame(now = performance.now()): void {
     if (this.firstFrameMs === null) this.firstFrameMs = now
@@ -26,16 +38,24 @@ export class FrameStats {
   reset(): void {
     this.count = 0
     this.last = 0
+    this.workCount = 0
   }
 
-  /** Average fps, "1% low" fps (99th percentile frame time) and average frame time. */
-  summary(): { fps: number; low1: number; ms: number; samples: number } {
+  /**
+   * Average fps, "1% low" fps (99th percentile frame time), average frame time,
+   * and average / 99th percentile CPU work per frame.
+   */
+  summary(): { fps: number; low1: number; ms: number; cpuMs: number; cpuP99: number; samples: number } {
     const n = Math.min(this.count, WINDOW)
-    if (!n) return { fps: 0, low1: 0, ms: 0, samples: 0 }
+    const w = Math.min(this.workCount, WINDOW)
+    const works = Array.from(this.works.subarray(0, w)).sort((a, b) => a - b)
+    const cpuMs = w ? works.reduce((a, b) => a + b, 0) / w : 0
+    const cpuP99 = w ? works[Math.min(w - 1, Math.floor(w * 0.99))] : 0
+    if (!n) return { fps: 0, low1: 0, ms: 0, cpuMs, cpuP99, samples: 0 }
     const sorted = Array.from(this.times.subarray(0, n)).sort((a, b) => a - b)
     const avg = sorted.reduce((a, b) => a + b, 0) / n
     const p99 = sorted[Math.min(n - 1, Math.floor(n * 0.99))]
-    return { fps: 1000 / avg, low1: 1000 / p99, ms: avg, samples: n }
+    return { fps: 1000 / avg, low1: 1000 / p99, ms: avg, cpuMs, cpuP99, samples: n }
   }
 }
 
@@ -52,12 +72,14 @@ export interface BenchResult {
   fps: number
   low1: number
   ms: number
+  cpuMs: number
+  cpuP99: number
   drawCalls: number
   triangles: number
   heapMB: number | null
 }
 
-export const BENCH_SHIP_COUNTS = [20, 50, 100, 200, 400]
+export const BENCH_SHIP_COUNTS = [20, 100, 200, 400, 800, 1600]
 const WARMUP = 1500
 const MEASURE = 5000
 
@@ -75,7 +97,18 @@ export async function runBench(
     stats.reset()
     await wait(MEASURE)
     const s = stats.summary()
-    results.push({ stack: app.name, scene, ships, fps: s.fps, low1: s.low1, ms: s.ms, ...app.info(), heapMB: heapMB() })
+    results.push({
+      stack: app.name,
+      scene,
+      ships,
+      fps: s.fps,
+      low1: s.low1,
+      ms: s.ms,
+      cpuMs: s.cpuMs,
+      cpuP99: s.cpuP99,
+      ...app.info(),
+      heapMB: heapMB(),
+    })
   }
 
   for (const scene of ['ship', 'station'] as const) {

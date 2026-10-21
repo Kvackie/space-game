@@ -40,8 +40,11 @@ let last = performance.now()
 world.renderer.setAnimationLoop((now) => {
   const dt = Math.min(0.1, (now - last) / 1000)
   last = now
+  const start = performance.now()
   world.update(dt)
   world.render()
   if (world.scene === 'battle') ui.update(world.battle, world.selected)
-  stats.frame(now)
+  stats.work(performance.now() - start)
+  // same clock as the other stacks, so frame timings compare like for like
+  stats.frame()
 })

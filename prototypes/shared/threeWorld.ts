@@ -31,7 +31,7 @@ import {
 import { DEFAULT_SHIPS, MAX_PIXEL_RATIO } from './stack'
 import * as tex from './textures'
 
-const MAX_SHIPS_PER_TEAM = 256
+const MAX_SHIPS_PER_TEAM = 1024
 const MAX_BEAMS = 1024
 const MAX_BLASTS = 96
 
