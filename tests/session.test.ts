@@ -23,7 +23,8 @@ describe('session start-up', () => {
 
   it('starts a new game with no resources when there is no save', async () => {
     const session = await startSession()
-    expect(session.store.state.resources).toEqual({ ore1: 0, ore2: 0, rareResource: 0, pullCurrency: 0 })
+    expect(Object.values(session.store.state.resources).every((n) => n === 0)).toBe(true)
+    expect(session.store.state.ships.map((s) => s.hull)).toEqual(['barge'])
     expect(session.loadError).toBeNull()
   })
 

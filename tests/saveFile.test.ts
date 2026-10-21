@@ -39,6 +39,24 @@ describe('save file', () => {
     for (const save of broken) expect(() => deserialize(JSON.stringify(save))).toThrow(SaveError)
   })
 
+  it('upgrades a version 1 save, keeping its resources and timers', () => {
+    const v1 = {
+      version: 1,
+      createdAt: 1,
+      savedAt: 2,
+      nextId: 4,
+      resources: { ore1: 12, ore2: 3, rareResource: 1, pullCurrency: 0 },
+      timers: [{ id: 't3', kind: 'mining', startedAt: 5, durationMs: 60 }],
+    }
+    const upgraded = deserialize(JSON.stringify(v1))
+    expect(upgraded.version).toBe(SAVE_VERSION)
+    expect(upgraded.resources).toMatchObject({ ore1: 12, ore2: 3, material1: 0, component: 0 })
+    expect(upgraded.timers).toEqual(v1.timers)
+    expect(upgraded.ships).toHaveLength(1)
+    expect(upgraded.ships[0].id).toBe('s4')
+    expect(upgraded.nextId).toBe(5)
+  })
+
   it('does not reject hand-edited but well-formed values', () => {
     const edited = sample()
     edited.resources.pullCurrency = 999_999

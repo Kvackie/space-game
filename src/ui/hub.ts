@@ -4,12 +4,15 @@
  * so the buttons are present but disabled for now.
  */
 
-import placeholders from '../data/placeholders.json'
-import { RESOURCE_IDS } from '../game/state'
+import { NAMES } from '../data'
+import type { ResourceId } from '../game/state'
 import type { GameStore } from '../game/store'
 import './hub.css'
 
 const MODULES = ['Fleet', 'Crafting', 'Mining', 'Expeditions', 'Recruit', 'Captains'] as const
+
+/** Raw ores and the gacha currencies; materials and components show in Crafting. */
+const HUB_RESOURCES: ResourceId[] = ['ore1', 'ore2', 'rareResource', 'pullCurrency']
 
 const numberFormat = new Intl.NumberFormat('en')
 
@@ -31,20 +34,20 @@ export function createHub(root: HTMLElement, store: GameStore): void {
 
   const title = el('div', 'hub-title')
   const titleText = el('div')
-  titleText.append(el('span', 'hub-label', 'Station'), el('h1', 'hub-name', placeholders.names.station))
+  titleText.append(el('span', 'hub-label', 'Station'), el('h1', 'hub-name', NAMES.station))
   title.append(titleText)
 
   const resources = el('ul', 'hub-resources')
   resources.setAttribute('aria-label', 'Resources')
-  const amounts = RESOURCE_IDS.map((id) => {
+  const amounts = HUB_RESOURCES.map((id) => {
     const item = el('li')
     const amount = el('span')
-    item.append(el('span', 'hub-label', placeholders.names[id]), amount)
+    item.append(el('span', 'hub-label', NAMES[id]), amount)
     resources.append(item)
     return amount
   })
   store.subscribe((state) => {
-    RESOURCE_IDS.forEach((id, i) => (amounts[i].textContent = numberFormat.format(state.resources[id])))
+    HUB_RESOURCES.forEach((id, i) => (amounts[i].textContent = numberFormat.format(state.resources[id])))
   })
 
   const settings = el('button', 'hub-icon-button')

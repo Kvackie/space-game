@@ -5,15 +5,41 @@
  * this build understands. It does not try to detect hand-edited values.
  */
 
-import { RESOURCE_IDS, type GameState } from '../game/state'
+import { HULLS, STARTING_SHIP } from '../data'
+import { DEFAULT_SETTINGS, RESOURCE_IDS, type GameState } from '../game/state'
 
-export const SAVE_VERSION = 1
+export const SAVE_VERSION = 2
 
-/**
- * Upgrades a save one version at a time: MIGRATIONS[n] turns version n into
- * version n + 1. Empty until the format first changes.
- */
-const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<string, unknown>> = {}
+type RawSave = Record<string, unknown>
+
+/** Upgrades a save one version at a time: MIGRATIONS[n] turns version n into n + 1. */
+const MIGRATIONS: Record<number, (save: RawSave) => RawSave> = {
+  // v2: materials and components, ships (with the free starting ship), gear,
+  // captains, gacha pity, battle records and settings
+  1: (save) => {
+    let nextId = save.nextId as number
+    const hull = HULLS[STARTING_SHIP]
+    return {
+      ...save,
+      resources: { material1: 0, material2: 0, component: 0, ...(save.resources as object) },
+      ships: [
+        {
+          id: `s${nextId++}`,
+          hull: STARTING_SHIP,
+          name: `${hull.name} 1`,
+          gear: Array(hull.gearSlots).fill(null),
+          captainId: null,
+        },
+      ],
+      gear: [],
+      captains: [],
+      gacha: { pity: 0 },
+      battles: [],
+      settings: { ...DEFAULT_SETTINGS },
+      nextId,
+    }
+  },
+}
 
 export class SaveError extends Error {}
 
@@ -31,16 +57,19 @@ export function deserialize(text: string): GameState {
   return validate(migrate(raw))
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+function isRecord(value: unknown): value is RawSave {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
+const isString = (value: unknown): value is string => typeof value === 'string'
+const isStringOrNull = (value: unknown) => value === null || isString(value)
 
-function migrate(raw: unknown): Record<string, unknown> {
+function migrate(raw: unknown): RawSave {
   if (!isRecord(raw)) throw new SaveError('The save is not a JSON object.')
-  if (!Number.isInteger(raw.version) || (raw.version as number) < 1)
+  if (!Number.isInteger(raw.version) || (raw.version as number) < 1) {
     throw new SaveError('The save has no valid version.')
+  }
   if ((raw.version as number) > SAVE_VERSION) {
     throw new SaveError(`The save is from a newer version of the game (save v${raw.version}, game v${SAVE_VERSION}).`)
   }
@@ -53,9 +82,17 @@ function migrate(raw: unknown): Record<string, unknown> {
   return save
 }
 
-function validate(save: Record<string, unknown>): GameState {
+function validate(save: RawSave): GameState {
   const fail = (what: string): never => {
     throw new SaveError(`The save is damaged: ${what}.`)
+  }
+  /** Checks an array field whose items must each pass `ok`. */
+  const list = (field: string, ok: (item: RawSave) => boolean) => {
+    const value = save[field]
+    if (!Array.isArray(value)) fail(field)
+    ;(value as unknown[]).forEach((item, i) => {
+      if (!isRecord(item) || !ok(item)) fail(`${field}[${i}]`)
+    })
   }
 
   if (!isNumber(save.createdAt)) fail('createdAt')
@@ -63,22 +100,44 @@ function validate(save: Record<string, unknown>): GameState {
   if (!Number.isInteger(save.nextId)) fail('nextId')
 
   if (!isRecord(save.resources)) fail('resources')
-  const resources = save.resources as Record<string, unknown>
+  const resources = save.resources as RawSave
   for (const id of RESOURCE_IDS) if (!isNumber(resources[id])) fail(`resources.${id}`)
 
-  if (!Array.isArray(save.timers)) fail('timers')
-  for (const [i, timer] of (save.timers as unknown[]).entries()) {
-    if (
-      !isRecord(timer) ||
-      typeof timer.id !== 'string' ||
-      typeof timer.kind !== 'string' ||
-      !isNumber(timer.startedAt) ||
-      !isNumber(timer.durationMs) ||
-      (timer.data !== undefined && !isRecord(timer.data))
-    ) {
-      fail(`timers[${i}]`)
-    }
-  }
+  list(
+    'timers',
+    (t) =>
+      isString(t.id) &&
+      isString(t.kind) &&
+      isNumber(t.startedAt) &&
+      isNumber(t.durationMs) &&
+      (t.data === undefined || isRecord(t.data)),
+  )
+  list(
+    'ships',
+    (s) =>
+      isString(s.id) &&
+      isString(s.hull) &&
+      isString(s.name) &&
+      Array.isArray(s.gear) &&
+      s.gear.every(isStringOrNull) &&
+      isStringOrNull(s.captainId),
+  )
+  list('gear', (g) => isString(g.id) && isString(g.type))
+  list('captains', (c) => isString(c.id) && isString(c.def) && isNumber(c.duplicates))
+  list(
+    'battles',
+    (b) =>
+      isString(b.id) &&
+      isNumber(b.at) &&
+      isNumber(b.seed) &&
+      Array.isArray(b.fleet) &&
+      typeof b.won === 'boolean' &&
+      isRecord(b.rewards),
+  )
+
+  if (!isRecord(save.gacha) || !isNumber(save.gacha.pity)) fail('gacha')
+  if (!isRecord(save.settings) || !['high', 'low'].includes(save.settings.quality as string)) fail('settings')
+  if (typeof (save.settings as RawSave).showFps !== 'boolean') fail('settings.showFps')
 
   return save as unknown as GameState
 }

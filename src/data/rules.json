@@ -1,0 +1,13 @@
+{
+  "$comment": "Decided values (see the decision IDs). Not placeholders.",
+  "startingShip": "barge",
+  "formationRows": ["front", "middle", "back"],
+  "gacha": {
+    "rates": { "common": 0.5, "rare": 0.3, "epic": 0.14, "legendary": 0.05, "mythical": 0.01 },
+    "pityThreshold": 50,
+    "pityRarity": "legendary",
+    "pityResetRarities": ["legendary", "mythical"],
+    "multiPull": 10
+  },
+  "rarityOrder": ["common", "rare", "epic", "legendary", "mythical"]
+}

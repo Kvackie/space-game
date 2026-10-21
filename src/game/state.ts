@@ -1,15 +1,25 @@
 /**
- * The whole saved game. Later build steps add ships, captains and so on; each
- * addition bumps SAVE_VERSION and adds a migration in save/saveFile.ts.
+ * The whole saved game. Each format change bumps SAVE_VERSION and adds a
+ * migration in save/saveFile.ts.
  */
 
-export const RESOURCE_IDS = ['ore1', 'ore2', 'rareResource', 'pullCurrency'] as const
+import { HULLS, STARTING_SHIP, type Row } from '../data'
+
+export const RESOURCE_IDS = [
+  'ore1',
+  'ore2',
+  'material1',
+  'material2',
+  'component',
+  'rareResource',
+  'pullCurrency',
+] as const
 export type ResourceId = (typeof RESOURCE_IDS)[number]
 
 /**
- * Anything that finishes after a delay: mining runs, refining, building,
- * expeditions (D-71). Timers keep counting while the game is closed because
- * they store wall-clock times, not elapsed play time.
+ * Anything that finishes after a delay: mining runs, crafting, expeditions
+ * (D-71). Timers store wall-clock times, so they keep counting while the game
+ * is closed.
  */
 export interface Timer {
   id: string
@@ -18,8 +28,45 @@ export interface Timer {
   /** Device clock, ms since epoch. */
   startedAt: number
   durationMs: number
-  /** Kind-specific details, e.g. which ship and which ore field. */
+  /** Kind-specific details, e.g. which ships and which ore field. */
   data?: Record<string, unknown>
+}
+
+export interface Ship {
+  id: string
+  hull: string
+  name: string
+  /** One entry per gear slot: a gear item id or null. */
+  gear: (string | null)[]
+  captainId: string | null
+}
+
+export interface GearItem {
+  id: string
+  type: string
+}
+
+export interface Captain {
+  id: string
+  def: string
+  /** Duplicates pulled; their effect is still open (D-62). */
+  duplicates: number
+}
+
+export interface BattleRecord {
+  id: string
+  /** When the battle happened (the expedition's end). */
+  at: number
+  seed: number
+  /** The player's ships as they fought, with rows. */
+  fleet: { shipId: string; row: Row }[]
+  won: boolean
+  rewards: Partial<Record<ResourceId, number>>
+}
+
+export interface Settings {
+  quality: 'high' | 'low'
+  showFps: boolean
 }
 
 export interface GameState {
@@ -28,20 +75,55 @@ export interface GameState {
   savedAt: number
   resources: Record<ResourceId, number>
   timers: Timer[]
-  /** Counter for unique ids (timers, later ships and captains). */
+  ships: Ship[]
+  gear: GearItem[]
+  captains: Captain[]
+  gacha: { pity: number }
+  battles: BattleRecord[]
+  settings: Settings
+  /** Counter for unique ids (timers, ships, gear, captains, battles). */
   nextId: number
 }
 
+export const DEFAULT_SETTINGS: Settings = { quality: 'high', showFps: false }
+
+export function newId(state: GameState, prefix: string): string {
+  return `${prefix}${state.nextId++}`
+}
+
+export function createShip(state: GameState, hull: string): Ship {
+  const def = HULLS[hull]
+  const count = state.ships.filter((s) => s.hull === hull).length + 1
+  const ship: Ship = {
+    id: newId(state, 's'),
+    hull,
+    name: `${def.name} ${count}`,
+    gear: Array<string | null>(def.gearSlots).fill(null),
+    captainId: null,
+  }
+  state.ships.push(ship)
+  return ship
+}
+
 export function newGame(now: number): GameState {
-  return {
-    version: 1,
+  const state: GameState = {
+    version: 2,
     createdAt: now,
     savedAt: now,
     // no starting resources (D-86)
-    resources: { ore1: 0, ore2: 0, rareResource: 0, pullCurrency: 0 },
+    resources: Object.fromEntries(RESOURCE_IDS.map((id) => [id, 0])) as Record<ResourceId, number>,
     timers: [],
+    ships: [],
+    gear: [],
+    captains: [],
+    gacha: { pity: 0 },
+    battles: [],
+    settings: { ...DEFAULT_SETTINGS },
     nextId: 1,
   }
+  // one free starting ship (D-64, D-86)
+  createShip(state, STARTING_SHIP)
+  return state
 }
 
 export const timerEndsAt = (timer: Timer) => timer.startedAt + timer.durationMs
