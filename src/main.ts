@@ -16,10 +16,12 @@ import { createStationScene } from './render/stationScene'
 import { createFpsCounter } from './ui/fps'
 import { createHub } from './ui/hub'
 import { ScreenHost } from './ui/screens'
+import { captainsScreen } from './ui/screens/captains'
 import { craftingScreen } from './ui/screens/crafting'
 import { expeditionsScreen } from './ui/screens/expeditions'
 import { fleetScreen } from './ui/screens/fleet'
 import { miningScreen } from './ui/screens/mining'
+import { recruitScreen } from './ui/screens/recruit'
 import { settingsScreen } from './ui/screens/settings'
 
 const gameArea = document.getElementById('game')!
@@ -50,7 +52,15 @@ const { store } = session
 store.subscribe((state) => applyQuality(engine, state.settings.quality))
 
 const screens = new ScreenHost(ui, store)
-for (const screen of [fleetScreen, craftingScreen, miningScreen, expeditionsScreen, settingsScreen])
+for (const screen of [
+  fleetScreen,
+  craftingScreen,
+  miningScreen,
+  expeditionsScreen,
+  recruitScreen,
+  captainsScreen,
+  settingsScreen,
+])
   screens.register(screen)
 createHub(ui, store, screens)
 createFpsCounter(ui, engine, store)
