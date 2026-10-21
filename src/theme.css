@@ -1,0 +1,72 @@
+/*
+ * Style D-84: hybrid variant, "Navy & signal red".
+ * UI is sized in rem; layout.ts sets 1rem = 16 design px scaled to the screen.
+ */
+
+:root {
+  --bg: #070b14;
+  --panel: #0f1626;
+  --line: #22304a;
+  --text: #d5ddeb;
+  --muted: #8394b0;
+  --accent: #e2473f;
+  --holo: #5fa8d9;
+  --danger: #ef6b62;
+  --on-accent: #070b14;
+  --letterbox: #03050a;
+
+  --font-display: 'Oxanium', sans-serif;
+  --font-body: 'IBM Plex Sans Condensed', sans-serif;
+  --font-data: 'JetBrains Mono', monospace;
+
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--letterbox);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+#game {
+  position: fixed;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#world {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+  touch-action: none;
+}
+
+#ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+#ui > * {
+  pointer-events: auto;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--holo);
+  outline-offset: 2px;
+}

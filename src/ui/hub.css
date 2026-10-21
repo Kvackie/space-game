@@ -1,0 +1,127 @@
+/* Station hub overlay: Nikke-style angled module buttons, EVE-style thin header (D-82). */
+
+.hub-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.625rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+.hub-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hub-title::before {
+  content: '';
+  width: 0.25rem;
+  height: 1.875rem;
+  background: var(--accent);
+}
+
+.hub-label {
+  display: block;
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+
+.hub-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+.hub-resources {
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 1.375rem;
+  font-family: var(--font-data);
+  font-size: 0.8125rem;
+}
+
+.hub-resources li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.hub-resources .hub-label {
+  letter-spacing: 0.04em;
+}
+
+.hub-icon-button {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.hub-icon-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.hub-modules {
+  position: absolute;
+  left: 1.5rem;
+  top: 5.375rem;
+  width: 15.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hub-module {
+  height: 3.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.125rem 0 1rem;
+  background: var(--panel);
+  border: 0;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 0.875rem) 0, 100% 50%, calc(100% - 0.875rem) 100%, 0 100%);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hub-module:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--panel) 70%, var(--line));
+}
+
+.hub-module:disabled,
+.hub-icon-button:disabled {
+  cursor: default;
+  color: var(--muted);
+}
+
+.hub-module-status {
+  font-family: var(--font-data);
+  font-weight: 400;
+  font-size: 0.6875rem;
+  letter-spacing: 0;
+  color: var(--muted);
+}

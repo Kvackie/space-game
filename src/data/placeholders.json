@@ -1,0 +1,11 @@
+{
+  "$comment": "Every [PLACEHOLDER] value the human approved, in one place (GDD rule 0.2.5). Replace as decisions land.",
+  "names": {
+    "game": "[GAME TITLE]",
+    "station": "[STATION NAME]",
+    "ore1": "[ORE 1]",
+    "ore2": "[ORE 2]",
+    "rareResource": "[RARE RESOURCE]",
+    "pullCurrency": "[PULL CURRENCY]"
+  }
+}
