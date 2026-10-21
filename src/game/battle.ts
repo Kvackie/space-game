@@ -7,7 +7,9 @@
  *   still has ships (Front, then Middle, then Back), picked at random within it.
  * - Damage = firepower × scale / (scale + target defence).
  * - Skills trigger automatically on their condition.
- * - The battle ends when one side is destroyed; running out of time is a loss.
+ * - The battle ends when one side is destroyed. If time runs out, the side
+ *   that lost the smaller share of its own total HP wins (D-107); a tie goes
+ *   to the enemy.
  */
 
 import { BATTLE, ROWS, SKILLS, type Row } from '../data'
@@ -111,5 +113,10 @@ export function simulateBattle(fighters: CombatantInit[], seed: number): BattleR
     const enemyLeft = alive('enemy').length
     if (!playerLeft || !enemyLeft) return { won: playerLeft > 0, duration: t, events }
   }
-  return { won: false, duration: BATTLE.timeLimitSeconds, events }
+  const lost = (side: Side) => {
+    const all = units.filter((u) => u.side === side)
+    const max = all.reduce((n, u) => n + u.maxHp, 0)
+    return max ? all.reduce((n, u) => n + (u.maxHp - Math.max(0, u.hp)), 0) / max : 1
+  }
+  return { won: lost('player') < lost('enemy'), duration: BATTLE.timeLimitSeconds, events }
 }

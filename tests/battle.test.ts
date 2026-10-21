@@ -50,13 +50,39 @@ describe('auto-battle', () => {
     expect(result.events.some((e) => e.type === 'shot' && e.from === 'p1')).toBe(true)
   })
 
-  it('loses a battle that runs out of time', () => {
+  it('on time-out, gives the win to the side that lost the smaller share of its HP (D-107)', () => {
+    // both sides survive 60 s: the player loses 10% of its HP, the enemy 30%
+    const result = simulateBattle(
+      [
+        ship({ id: 'p1', side: 'player', hp: 10_000, defence: 0, firepower: 0.5 }),
+        ship({ id: 'e1', side: 'enemy', hp: 100, defence: 0, firepower: 1000 / 60 }),
+      ],
+      3,
+    )
+    expect(result.duration).toBe(BATTLE.timeLimitSeconds)
+    expect(result.won).toBe(true)
+  })
+
+  it('compares shares, not raw damage, so a bigger fleet is not penalised', () => {
+    // the player takes more raw damage but a smaller share of its larger HP pool
+    const result = simulateBattle(
+      [
+        ship({ id: 'p1', side: 'player', hp: 5000, firepower: 0.6 }),
+        ship({ id: 'p2', side: 'player', hp: 5000, firepower: 0 }),
+        ship({ id: 'e1', side: 'enemy', hp: 100, firepower: 4 }),
+      ],
+      5,
+    )
+    expect(result.duration).toBe(BATTLE.timeLimitSeconds)
+    expect(result.won).toBe(true)
+  })
+
+  it('gives a time-out tie to the enemy', () => {
     const result = simulateBattle(
       [ship({ id: 'p1', side: 'player', firepower: 0 }), ship({ id: 'e1', side: 'enemy', firepower: 0 })],
       3,
     )
     expect(result.won).toBe(false)
-    expect(result.duration).toBe(BATTLE.timeLimitSeconds)
   })
 
   it('triggers Last Stand once, below its HP threshold', () => {
