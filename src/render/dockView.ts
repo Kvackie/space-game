@@ -1,10 +1,12 @@
 /**
- * The Fleet view (D-114): a docking bay with the selected ship on a slowly
- * turning cradle. Selecting another ship swaps the ship in the bay.
+ * The Fleet view (D-114): a docking bay with the selected ship on its cradle.
+ * Drag (mouse or touch) to turn the ship (D-119); it keeps a little momentum.
+ * Selecting another ship swaps the ship in the bay.
  */
 
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
 import type { Engine } from '@babylonjs/core/Engines/engine'
+import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { PointLight } from '@babylonjs/core/Lights/pointLight'
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
@@ -130,6 +132,13 @@ function buildBay(scene: Scene): void {
   glow.range = 40
 }
 
+/** Ship heading when it first appears; the camera sees it three-quarters from the front. */
+const START_YAW = 0.6
+/** Radians turned by dragging across the full window width. */
+const DRAG_TURN = Math.PI * 2
+/** Fastest turn a fling can leave behind, in radians per second. */
+const MAX_SPIN = 3
+
 export async function createDockView(engine: Engine): Promise<DockView> {
   const scene = new Scene(engine)
   // the camera looks in from the -Z side
@@ -149,12 +158,41 @@ export async function createDockView(engine: Engine): Promise<DockView> {
   let shown: { key: string; node: TransformNode } | null = null
   let appear = 1
   let time = 0
+  // turning by drag: yaw in radians, spin in radians per second once let go
+  let yaw = START_YAW
+  let spin = 0
+  let dragX: number | null = null
+  let movedAt = 0
+  scene.onPointerObservable.add((info) => {
+    const event = info.event as PointerEvent
+    if (info.type === PointerEventTypes.POINTERDOWN) {
+      dragX = event.clientX
+      movedAt = performance.now()
+      spin = 0
+    } else if (info.type === PointerEventTypes.POINTERMOVE && dragX !== null) {
+      const turn = ((event.clientX - dragX) / innerWidth) * DRAG_TURN
+      dragX = event.clientX
+      const now = performance.now()
+      const seconds = Math.max((now - movedAt) / 1000, 1 / 120)
+      movedAt = now
+      yaw += turn
+      spin = Math.max(-MAX_SPIN, Math.min(MAX_SPIN, turn / seconds))
+    } else if (info.type === PointerEventTypes.POINTERUP) {
+      dragX = null
+      // held still before letting go: no fling
+      if (performance.now() - movedAt > 100) spin = 0
+    }
+  })
   scene.onBeforeRenderObservable.add(() => {
     const dt = engine.getDeltaTime() / 1000
     time += dt
     if (!shown) return
     appear = Math.min(1, appear + dt * 3)
-    shown.node.rotation.y = time * 0.25
+    if (dragX === null) {
+      yaw += spin * dt
+      spin *= Math.exp(-dt * 3)
+    }
+    shown.node.rotation.y = yaw
     // hover just above the cradle
     shown.node.position.y = -1.1 + Math.sin(time * 0.8) * 0.15
     // swap-in: settle down onto the cradle and grow to full size
