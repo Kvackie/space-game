@@ -18,12 +18,12 @@ Every third-party asset in the game, with its source and licence. Anything not l
 
 ## Made for this project (placeholders)
 
-| Asset                                                             | How it was made                      | Where                                                                   |
-| ----------------------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
-| Ship and station models (barge, frigate, pirate frigate, station) | Built by a Blender script            | `blender/scripts/build_placeholder_models.py` → `public/assets/models/` |
-| Captain portraits                                                 | Drawn as SVG from per-captain traits | `src/ui/portrait.ts`, traits in `src/data/placeholders.json`            |
-| Star field, battle effects, warp gate                             | Generated in code at runtime         | `src/render/`                                                           |
-| Favicon                                                           | Hand-written SVG                     | `public/favicon.svg`                                                    |
+| Asset                                                             | How it was made                                                                                                    | Where                                                                   |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| Ship and station models (barge, frigate, pirate frigate, station) | Built by a Blender script; the frigate is an original design inspired by EVE Online's Caracal, using no CCP assets | `blender/scripts/build_placeholder_models.py` → `public/assets/models/` |
+| Captain portraits                                                 | Drawn as SVG from per-captain traits                                                                               | `src/ui/portrait.ts`, traits in `src/data/placeholders.json`            |
+| Star field, battle effects, warp gate                             | Generated in code at runtime                                                                                       | `src/render/`                                                           |
+| Favicon                                                           | Hand-written SVG                                                                                                   | `public/favicon.svg`                                                    |
 
 ## Adding an asset
 
