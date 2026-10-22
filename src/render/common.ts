@@ -30,6 +30,23 @@ function starTexture(scene: Scene): Texture {
   g.fillRect(0, 0, size, size)
   let seed = 7
   const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
+  // faint nebula wisps in the palette: navy, violet and a little signal red
+  for (const [hue, alpha] of [
+    [215, 0.1],
+    [260, 0.08],
+    [215, 0.08],
+    [355, 0.05],
+    [240, 0.07],
+  ]) {
+    const x = random() * size
+    const y = random() * size
+    const r = 120 + random() * 220
+    const wisp = g.createRadialGradient(x, y, 0, x, y, r)
+    wisp.addColorStop(0, `hsla(${hue}, 60%, 45%, ${alpha})`)
+    wisp.addColorStop(1, `hsla(${hue}, 60%, 45%, 0)`)
+    g.fillStyle = wisp
+    g.fillRect(x - r, y - r, r * 2, r * 2)
+  }
   for (let i = 0; i < 420; i++) {
     const r = random() < 0.92 ? 0.6 : 1.3
     g.fillStyle = `rgba(${200 + random() * 55}, ${210 + random() * 45}, 255, ${0.25 + random() * 0.6})`
