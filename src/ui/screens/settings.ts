@@ -132,6 +132,16 @@ export const settingsScreen: ScreenDef = {
           confirming ? 'Tap again to erase everything' : 'Reset save',
         ),
       ),
+      h(
+        'section',
+        { class: 'section' },
+        h('h3', { class: 'section-title' }, 'Testing'),
+        h(
+          'button',
+          { class: 'btn btn-secondary', type: 'button', onclick: () => ctx.open('debug') },
+          'Open debug menu',
+        ),
+      ),
     )
   },
 }

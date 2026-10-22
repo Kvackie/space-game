@@ -11,7 +11,7 @@ import { h } from './dom'
 import { formatDuration } from './format'
 import './screens.css'
 
-export type ScreenId = 'fleet' | 'crafting' | 'mining' | 'expeditions' | 'recruit' | 'captains' | 'settings'
+export type ScreenId = 'fleet' | 'crafting' | 'mining' | 'expeditions' | 'recruit' | 'captains' | 'settings' | 'debug'
 
 export interface ScreenContext {
   store: GameStore

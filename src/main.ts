@@ -23,6 +23,7 @@ import { wireSceneFlows } from './ui/sceneFlows'
 import { ScreenHost } from './ui/screens'
 import { captainsScreen } from './ui/screens/captains'
 import { craftingScreen } from './ui/screens/crafting'
+import { debugScreen } from './ui/screens/debug'
 import { expeditionsScreen } from './ui/screens/expeditions'
 import { fleetScreen } from './ui/screens/fleet'
 import { miningScreen } from './ui/screens/mining'
@@ -71,6 +72,7 @@ for (const screen of [
   recruitScreen,
   captainsScreen,
   settingsScreen,
+  debugScreen,
 ])
   screens.register(screen)
 createHub(ui, store, screens)
