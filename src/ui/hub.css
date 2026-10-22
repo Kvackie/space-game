@@ -158,6 +158,11 @@
   gap: 0.375rem;
 }
 
+/* Station spans both columns so the six modules stay paired */
+#game.compact .hub-module:first-child {
+  grid-column: 1 / -1;
+}
+
 #game.compact .hub-module {
   height: 2.75rem;
   padding: 0 1.25rem 0 0.75rem;

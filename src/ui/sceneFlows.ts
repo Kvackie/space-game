@@ -141,10 +141,10 @@ export function wireSceneFlows(opts: {
   let dockView: Promise<DockView> | null = null
   let inDock = false
   const syncDock = async () => {
-    if (screens.current === 'fleet') {
+    if (screens.base === 'fleet') {
       dockView ??= createDockView(engine)
       const view = await dockView
-      if (screens.current !== 'fleet') return
+      if (screens.base !== 'fleet') return
       const ship = fleetSelection(store.state)
       if (ship) view.show(ship.hull, ship.id)
       if (!inDock) setActiveScene(view.scene)

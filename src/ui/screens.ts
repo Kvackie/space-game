@@ -3,6 +3,9 @@
  * renders from the game state; it is rebuilt when the state changes, and
  * countdowns and progress bars tick in place in between, so buttons are not
  * replaced under the player's finger every second.
+ *
+ * Settings and Debug open over whatever screen is up (D-119): the 3D view stays
+ * as it is, and closing them goes back to that screen.
  */
 
 import type { GameState } from '../game/state'
@@ -29,6 +32,9 @@ export interface ScreenDef {
 
 const TICK_MS = 250
 
+const OVERLAYS: readonly ScreenId[] = ['settings', 'debug']
+const isOverlay = (id: ScreenId | null) => id !== null && OVERLAYS.includes(id)
+
 export class ScreenHost {
   private screens = new Map<ScreenId, ScreenDef>()
   private panel: HTMLElement
@@ -36,6 +42,8 @@ export class ScreenHost {
   private body: HTMLElement
   private listeners = new Set<() => void>()
   current: ScreenId | null = null
+  /** The screen under an open overlay, to return to when it closes. */
+  private behind: ScreenId | null = null
   readonly ctx: ScreenContext
 
   constructor(root: HTMLElement, store: GameStore) {
@@ -79,9 +87,16 @@ export class ScreenHost {
     this.listeners.add(listener)
   }
 
+  /** The screen that decides the 3D view: the one under an overlay, if any. */
+  get base(): ScreenId | null {
+    return isOverlay(this.current) ? this.behind : this.current
+  }
+
   open(id: ScreenId): void {
     const def = this.screens.get(id)
     if (!def) return
+    if (!isOverlay(id)) this.behind = null
+    else if (!isOverlay(this.current)) this.behind = this.current
     this.current = id
     this.title.textContent = def.title
     this.panel.hidden = false
@@ -94,7 +109,19 @@ export class ScreenHost {
     else this.open(id)
   }
 
+  /** Closes the screen; an overlay goes back to the screen it was opened over. */
   close(): void {
+    const back = isOverlay(this.current) ? this.behind : null
+    if (back) {
+      this.open(back)
+      return
+    }
+    this.home()
+  }
+
+  /** Closes every screen, back to the station. */
+  home(): void {
+    this.behind = null
     this.current = null
     this.panel.hidden = true
     this.body.replaceChildren()

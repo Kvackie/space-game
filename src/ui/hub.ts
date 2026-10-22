@@ -1,6 +1,7 @@
 /**
  * Station hub overlay (D-76, D-77): station name, resource bar and the module
- * buttons that open each screen, with a live status per module.
+ * buttons that open each screen, with a live status per module. Station, at
+ * the top, closes every screen and goes back to the station view (D-119).
  */
 
 import { NAMES } from '../data'
@@ -67,10 +68,17 @@ export function createHub(root: HTMLElement, store: GameStore, screens: ScreenHo
     return { id, button, status }
   })
 
+  const station = h(
+    'button',
+    { class: 'hub-module', type: 'button', onclick: () => screens.home() },
+    h('span', {}, 'Station'),
+  )
+
   const refresh = () => {
     const now = Date.now()
+    station.setAttribute('aria-pressed', String(screens.base === null))
     for (const { id, button, status } of buttons) {
-      button.setAttribute('aria-pressed', String(screens.current === id))
+      button.setAttribute('aria-pressed', String(screens.base === id))
       const text = screens.get(id)?.status?.(store.state, now) ?? '—'
       if (status.textContent !== text) status.textContent = text
     }
@@ -80,6 +88,6 @@ export function createHub(root: HTMLElement, store: GameStore, screens: ScreenHo
 
   root.append(
     header,
-    h('nav', { class: 'hub-modules', 'aria-label': 'Station modules' }, ...buttons.map((b) => b.button)),
+    h('nav', { class: 'hub-modules', 'aria-label': 'Station modules' }, station, ...buttons.map((b) => b.button)),
   )
 }
