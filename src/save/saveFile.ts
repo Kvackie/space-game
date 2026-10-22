@@ -8,7 +8,7 @@
 import { HULLS, STARTING_SHIP } from '../data'
 import { DEFAULT_SETTINGS, RESOURCE_IDS, type GameState } from '../game/state'
 
-export const SAVE_VERSION = 4
+export const SAVE_VERSION = 5
 
 type RawSave = Record<string, unknown>
 
@@ -50,6 +50,12 @@ const MIGRATIONS: Record<number, (save: RawSave) => RawSave> = {
   }),
   // v4: switchable 3D look (D-111)
   3: (save) => ({ ...save, settings: { look: 'standard', ...(save.settings as RawSave) } }),
+  // v5: one fixed look (D-119), so the look setting goes
+  4: (save) => {
+    const settings = { ...(save.settings as RawSave) }
+    delete settings.look
+    return { ...save, settings }
+  },
 }
 
 export class SaveError extends Error {}
@@ -156,7 +162,6 @@ function validate(save: RawSave): GameState {
   }
   if (!isRecord(save.settings) || !['high', 'low'].includes(save.settings.quality as string)) fail('settings')
   if (typeof (save.settings as RawSave).showFps !== 'boolean') fail('settings.showFps')
-  if (typeof (save.settings as RawSave).look !== 'string') fail('settings.look')
 
   return save as unknown as GameState
 }

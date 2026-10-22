@@ -75,8 +75,6 @@ export interface BattleRecord {
 export interface Settings {
   quality: 'high' | 'low'
   showFps: boolean
-  /** Which 3D look prototype is active (D-111); see render/look.ts. */
-  look: string
 }
 
 export interface GameState {
@@ -95,7 +93,7 @@ export interface GameState {
   nextId: number
 }
 
-export const DEFAULT_SETTINGS: Settings = { quality: 'high', showFps: false, look: 'standard' }
+export const DEFAULT_SETTINGS: Settings = { quality: 'high', showFps: false }
 
 export function newId(state: GameState, prefix: string): string {
   return `${prefix}${state.nextId++}`
@@ -117,7 +115,7 @@ export function createShip(state: GameState, hull: string): Ship {
 
 export function newGame(now: number): GameState {
   const state: GameState = {
-    version: 4,
+    version: 5,
     createdAt: now,
     savedAt: now,
     // no starting resources (D-86)

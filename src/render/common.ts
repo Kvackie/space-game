@@ -16,7 +16,6 @@ import type { TransformNode } from '@babylonjs/core/Meshes/transformNode'
 import type { AssetContainer } from '@babylonjs/core/assetContainer'
 import type { Scene } from '@babylonjs/core/scene'
 import '@babylonjs/loaders/glTF/2.0'
-import { applyLookToMesh, registerRig } from './look'
 
 export const BG = '#070b14'
 
@@ -61,8 +60,8 @@ function starTexture(scene: Scene): Texture {
 }
 
 /**
- * Dark space with stars, and cold key + dim fill lighting (D-78, D-84), plus a
- * back light that the switchable looks use for rims (D-111).
+ * Dark space with stars, lit the way of the chosen look (D-117, D-119): almost no
+ * fill, a hard warm key light for deep shadows and a red back light for rims.
  *
  * @param rimDirection where the back light shines: roughly towards the camera.
  */
@@ -74,13 +73,13 @@ export function setUpSpace(scene: Scene, rimDirection = new Vector3(0.2, -0.3, 1
   const fill = new HemisphericLight('fill', new Vector3(0, 1, 0), scene)
   fill.diffuse = Color3.FromHexString('#5a6f96')
   fill.groundColor = Color3.FromHexString('#0b0f1c')
-  fill.intensity = 0.6
+  fill.intensity = 0.04
   const key = new DirectionalLight('key', new Vector3(-0.6, -0.4, -0.7), scene)
-  key.diffuse = Color3.FromHexString('#c9d6ec')
-  key.intensity = 1.6
+  key.diffuse = Color3.FromHexString('#fff4e6')
+  key.intensity = 3.2
   const rim = new DirectionalLight('rim', rimDirection.normalize(), scene)
-  rim.intensity = 0
-  registerRig(scene, { fill, key, rim })
+  rim.diffuse = Color3.FromHexString('#ff3b30')
+  rim.intensity = 3.5
 
   const sky = CreateSphere('sky', { diameter: 1600, segments: 24, sideOrientation: Mesh.BACKSIDE }, scene)
   const material = new StandardMaterial('sky', scene)
@@ -109,10 +108,5 @@ export function instantiate(container: AssetContainer, name: string): TransformN
   const { rootNodes } = container.instantiateModelsToScene((source) => `${name}-${source}`, false, {
     doNotInstantiate: true,
   })
-  const root = rootNodes[0] as TransformNode
-  for (const mesh of root.getChildMeshes(false)) {
-    mesh.metadata = { ...mesh.metadata, model: true }
-    applyLookToMesh(mesh)
-  }
-  return root
+  return rootNodes[0] as TransformNode
 }

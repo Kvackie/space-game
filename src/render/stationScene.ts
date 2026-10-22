@@ -83,7 +83,6 @@ function addAsteroids(scene: Scene): void {
   material.specularColor = new Color3(0.05, 0.05, 0.05)
   rock.material = material
   rock.isPickable = false
-  rock.metadata = { model: true }
 
   const count = 90
   const rocks = Array.from({ length: count }, () => {

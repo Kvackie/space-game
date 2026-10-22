@@ -73,9 +73,11 @@ describe('save version 3', () => {
   })
 })
 
-describe('save version 4', () => {
-  it('adds the standard 3D look to older saves', () => {
+describe('save versions 4 and 5', () => {
+  it('drops the 3D look setting again, from older saves too', () => {
     const v3 = { ...newGame(0), version: 3, settings: { quality: 'low', showFps: true } }
-    expect(deserialize(JSON.stringify(v3)).settings).toEqual({ quality: 'low', showFps: true, look: 'standard' })
+    const v4 = { ...newGame(0), version: 4, settings: { quality: 'low', showFps: true, look: 'noir' } }
+    expect(deserialize(JSON.stringify(v3)).settings).toEqual({ quality: 'low', showFps: true })
+    expect(deserialize(JSON.stringify(v4)).settings).toEqual({ quality: 'low', showFps: true })
   })
 })

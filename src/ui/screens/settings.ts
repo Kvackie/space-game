@@ -5,7 +5,6 @@
 
 import { newGame, type Settings } from '../../game/state'
 import { exportSave, importSave } from '../../save/transfer'
-import { LOOK_INFO, LOOKS, type Look } from '../../render/look'
 import { h } from '../dom'
 import type { ScreenDef } from '../screens'
 
@@ -61,23 +60,6 @@ export const settingsScreen: ScreenDef = {
           toggle('Low', state.settings.quality === 'low', () => set({ quality: 'low' })),
         ),
         h('p', { class: 'empty' }, 'Low turns off glow and anti-aliasing and renders at lower resolution.'),
-      ),
-      h(
-        'section',
-        { class: 'section' },
-        h('h3', { class: 'section-title' }, '3D look (prototypes)'),
-        h(
-          'div',
-          { class: 'choices' },
-          ...LOOKS.map((look) => toggle(LOOK_INFO[look].name, state.settings.look === look, () => set({ look }))),
-        ),
-        h(
-          'p',
-          { class: 'empty' },
-          LOOK_INFO[
-            (LOOKS as readonly string[]).includes(state.settings.look) ? (state.settings.look as Look) : 'standard'
-          ].description,
-        ),
       ),
       h(
         'section',
