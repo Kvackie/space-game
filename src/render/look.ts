@@ -13,7 +13,7 @@ import type { Scene } from '@babylonjs/core/scene'
 import '@babylonjs/core/Rendering/outlineRenderer'
 import '@babylonjs/core/Rendering/edgesRenderer'
 
-export const LOOKS = ['standard', 'ink', 'edges', 'noir', 'holo'] as const
+export const LOOKS = ['standard', 'ink', 'edges', 'noir', 'holo', 'combined'] as const
 export type Look = (typeof LOOKS)[number]
 
 export const LOOK_INFO: Record<Look, { name: string; description: string }> = {
@@ -22,6 +22,10 @@ export const LOOK_INFO: Record<Look, { name: string; description: string }> = {
   edges: { name: 'Edges', description: 'Thin holo lines on hard edges, a technical read-out feel.' },
   noir: { name: 'Noir', description: 'Hard light, deep shadows, a red rim, film grain and vignette.' },
   holo: { name: 'Holo rim', description: 'Strong cold back light that outlines silhouettes in blue.' },
+  combined: {
+    name: 'Combined',
+    description: "Standard's colours, Noir's hard light and deep shadows, Holo rim's glow.",
+  },
 }
 
 /** The lights and pipeline a look adjusts; registered by each scene. */
@@ -80,7 +84,7 @@ interface LookSettings {
   bloomThreshold: number
 }
 
-const SETTINGS: Record<Look, LookSettings> = {
+const BASE: Record<Exclude<Look, 'combined'>, LookSettings> = {
   standard: {
     fill: 0.6,
     key: 1.6,
@@ -159,6 +163,21 @@ const SETTINGS: Record<Look, LookSettings> = {
     vignette: 2,
     bloomWeight: 0.9,
     bloomThreshold: 0.45,
+  },
+}
+
+const SETTINGS: Record<Look, LookSettings> = {
+  ...BASE,
+  // the human's mix: Standard colours and grading, Noir lighting, Holo rim bloom
+  combined: {
+    ...BASE.standard,
+    fill: BASE.noir.fill,
+    key: BASE.noir.key,
+    keyColour: BASE.noir.keyColour,
+    rim: BASE.noir.rim,
+    rimColour: BASE.noir.rimColour,
+    bloomWeight: BASE.holo.bloomWeight,
+    bloomThreshold: BASE.holo.bloomThreshold,
   },
 }
 
