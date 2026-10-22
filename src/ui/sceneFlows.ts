@@ -10,6 +10,7 @@ import type { PullResult } from '../game/gacha'
 import type { ResourceId } from '../game/state'
 import type { GameStore } from '../game/store'
 import { createBattleView, type BattleView } from '../render/battleView'
+import { createDockView, type DockView } from '../render/dockView'
 import { createWarpView, type WarpView } from '../render/warpView'
 import { h } from './dom'
 import { portrait } from './portrait'
@@ -17,6 +18,7 @@ import { formatNumber } from './format'
 import { createSceneHud } from './sceneHud'
 import type { ScreenHost } from './screens'
 import { expeditionHooks } from './screens/expeditions'
+import { fleetSelection } from './screens/fleet'
 import { recruitHooks } from './screens/recruit'
 
 const SPEEDS = [1, 2, 4]
@@ -134,6 +136,26 @@ export function wireSceneFlows(opts: {
       showResults()
     })
   }
+
+  // Fleet opens the docking bay; the bay shows the ship selected in the Fleet panel (D-114)
+  let dockView: Promise<DockView> | null = null
+  let inDock = false
+  const syncDock = async () => {
+    if (screens.current === 'fleet') {
+      dockView ??= createDockView(engine)
+      const view = await dockView
+      if (screens.current !== 'fleet') return
+      const ship = fleetSelection(store.state)
+      if (ship) view.show(ship.hull, ship.id)
+      if (!inDock) setActiveScene(view.scene)
+      inDock = true
+    } else if (inDock) {
+      inDock = false
+      setActiveScene(stationScene)
+    }
+  }
+  screens.onChange(() => void syncDock())
+  store.subscribe(() => void syncDock())
 
   // screens render their Watch button only once the hook exists
   store.changed()

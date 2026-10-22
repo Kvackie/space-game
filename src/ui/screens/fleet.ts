@@ -24,6 +24,11 @@ export function shipActivity(state: GameState, ship: Ship): string {
 
 let selected: string | null = null
 
+/** The ship the Fleet view shows; the docking bay displays the same one (D-114). */
+export function fleetSelection(state: GameState): Ship | undefined {
+  return state.ships.find((s) => s.id === selected) ?? state.ships[0]
+}
+
 function detail(
   state: GameState,
   ship: Ship,
