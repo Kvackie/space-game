@@ -5,6 +5,7 @@
 
 import type { DirectionalLight } from '@babylonjs/core/Lights/directionalLight'
 import type { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight'
+import { ColorCurves } from '@babylonjs/core/Materials/colorCurves'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
 import type { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh'
 import type { DefaultRenderingPipeline } from '@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/defaultRenderingPipeline'
@@ -51,29 +52,121 @@ export function registerPipeline(scene: Scene, pipeline: DefaultRenderingPipelin
 /** Outlines and edge lines for one model mesh, per the current look. */
 export function applyLookToMesh(mesh: AbstractMesh): void {
   mesh.renderOutline = current === 'ink'
-  mesh.outlineColor = Color3.FromHexString('#05070c')
-  mesh.outlineWidth = 0.05
+  mesh.outlineColor = Color3.Black()
+  mesh.outlineWidth = 0.14
   if (current === 'edges') {
     mesh.enableEdgesRendering(0.95)
-    mesh.edgesColor = new Color4(0.37, 0.66, 0.85, 0.75)
-    mesh.edgesWidth = 2.5
+    mesh.edgesColor = new Color4(0.45, 0.85, 1, 1)
+    mesh.edgesWidth = 6
   } else {
     mesh.disableEdgesRendering()
   }
+}
+
+interface LookSettings {
+  fill: number
+  key: number
+  keyColour: string
+  rim: number
+  rimColour: string
+  /** colour grading: saturation (-100..100), hue tint in degrees and its strength */
+  saturation: number
+  tintHue: number
+  tint: number
+  contrast: number
+  grain: number
+  vignette: number
+  bloomWeight: number
+  bloomThreshold: number
+}
+
+const SETTINGS: Record<Look, LookSettings> = {
+  standard: {
+    fill: 0.6,
+    key: 1.6,
+    keyColour: '#c9d6ec',
+    rim: 0,
+    rimColour: '#5fa8d9',
+    saturation: 0,
+    tintHue: 0,
+    tint: 0,
+    contrast: 1,
+    grain: 0,
+    vignette: 0,
+    bloomWeight: 0.25,
+    bloomThreshold: 0.9,
+  },
+  // flat, bright toon shading with thick black outlines
+  ink: {
+    fill: 1.3,
+    key: 0.9,
+    keyColour: '#ffffff',
+    rim: 0,
+    rimColour: '#5fa8d9',
+    saturation: 25,
+    tintHue: 0,
+    tint: 0,
+    contrast: 1.15,
+    grain: 0,
+    vignette: 0,
+    bloomWeight: 0.15,
+    bloomThreshold: 0.95,
+  },
+  // dark hulls so the bright edge lines read like a tactical display
+  edges: {
+    fill: 0.2,
+    key: 0.7,
+    keyColour: '#9fb6d6',
+    rim: 0.6,
+    rimColour: '#5fa8d9',
+    saturation: -40,
+    tintHue: 205,
+    tint: 35,
+    contrast: 1.1,
+    grain: 0,
+    vignette: 1.5,
+    bloomWeight: 0.45,
+    bloomThreshold: 0.7,
+  },
+  // near monochrome, hard key, deep shadows, red rim, grain and vignette
+  noir: {
+    fill: 0.04,
+    key: 3.2,
+    keyColour: '#fff4e6',
+    rim: 3.5,
+    rimColour: '#ff3b30',
+    saturation: -80,
+    tintHue: 0,
+    tint: 0,
+    contrast: 1.7,
+    grain: 30,
+    vignette: 5,
+    bloomWeight: 0.3,
+    bloomThreshold: 0.85,
+  },
+  // silhouettes outlined by a strong cyan back light, extra glow, cool grade
+  holo: {
+    fill: 0.12,
+    key: 0.5,
+    keyColour: '#9fb6d6',
+    rim: 5,
+    rimColour: '#6fd8ff',
+    saturation: 10,
+    tintHue: 195,
+    tint: 45,
+    contrast: 1.2,
+    grain: 0,
+    vignette: 2,
+    bloomWeight: 0.9,
+    bloomThreshold: 0.45,
+  },
 }
 
 function applyToScene(scene: Scene): void {
   const rig = rigs.get(scene)
   if (!rig) return
   const { fill, key, rim, pipeline } = rig
-  const settings: Record<Look, { fill: number; key: number; keyColour: string; rim: number; rimColour: string }> = {
-    standard: { fill: 0.6, key: 1.6, keyColour: '#c9d6ec', rim: 0, rimColour: '#5fa8d9' },
-    ink: { fill: 0.75, key: 1.5, keyColour: '#dfe6f2', rim: 0, rimColour: '#5fa8d9' },
-    edges: { fill: 0.45, key: 1.3, keyColour: '#c9d6ec', rim: 0.4, rimColour: '#5fa8d9' },
-    noir: { fill: 0.12, key: 2.6, keyColour: '#f1e6d6', rim: 1.6, rimColour: '#e2473f' },
-    holo: { fill: 0.35, key: 1.1, keyColour: '#c9d6ec', rim: 2.4, rimColour: '#7fc4f0' },
-  }
-  const s = settings[current]
+  const s = SETTINGS[current]
   fill.intensity = s.fill
   key.intensity = s.key
   key.diffuse = Color3.FromHexString(s.keyColour)
@@ -81,14 +174,21 @@ function applyToScene(scene: Scene): void {
   rim.diffuse = Color3.FromHexString(s.rimColour)
 
   if (pipeline) {
-    const noir = current === 'noir'
-    pipeline.grainEnabled = noir
-    pipeline.grain.intensity = 12
+    pipeline.grainEnabled = s.grain > 0
+    pipeline.grain.intensity = s.grain
     pipeline.grain.animated = true
-    pipeline.imageProcessing.vignetteEnabled = noir
-    pipeline.imageProcessing.vignetteWeight = 2.5
-    pipeline.imageProcessing.contrast = noir ? 1.35 : 1
-    pipeline.imageProcessing.exposure = noir ? 0.95 : 1
+    const image = pipeline.imageProcessing
+    image.vignetteEnabled = s.vignette > 0
+    image.vignetteWeight = s.vignette
+    image.contrast = s.contrast
+    image.colorCurvesEnabled = s.saturation !== 0 || s.tint > 0
+    const curves = image.colorCurves ?? new ColorCurves()
+    curves.globalSaturation = s.saturation
+    curves.globalHue = s.tintHue
+    curves.globalDensity = s.tint
+    image.colorCurves = curves
+    pipeline.bloomWeight = s.bloomWeight
+    pipeline.bloomThreshold = s.bloomThreshold
   }
 
   for (const mesh of scene.meshes) if (mesh.metadata?.model) applyLookToMesh(mesh)
